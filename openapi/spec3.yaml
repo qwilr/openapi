@@ -1,0 +1,470 @@
+openapi: 3.0.2
+info:
+  version: 1.0.0
+  title: Qwilr Public API
+  termsOfService: 'https://qwilr.com/terms/'
+  contact:
+    email: api@qwilr.com
+    url: 'http://qwilr.com'
+  license:
+    name: Qwilr License
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  x-logo:
+    url: 'https://qwilr.com/wp-content/uploads/2019/10/qwilr-logo-dark.png'
+  description: >
+    This is Qwilr API documentation
+
+    # Introduction
+
+    Welcome to the Qwilr Public API documentation. With our API you'll be able
+    to generate Qwilr Pages programmatically. This means you can generate custom
+    quotes, create pages when someone fills out a form, or anything else. The
+    sky is the limit.
+
+
+    Our API is organized around
+    [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer). All
+    calls made are live. If you need to test outside of your live account, get
+    in touch with our team for options around that.
+
+
+    If you're looking for help with the Qwilr app you can find that in our [help
+    documentation](https://help.qwilr.com/).
+
+
+    If you have any questions about our API, please get in touch at <a
+    href="mailto:help@qwilr.com">help@qwilr.com</a>.
+
+
+    # OpenAPI Specification
+
+    The goal of The OpenAPI Specification is to define a standard,
+    language-agnostic interface to REST APIs which
+
+    allows both humans and computers to discover and understand the capabilities
+    of the service without access to source
+
+    code, documentation, or through network traffic inspection. When properly
+    defined via OpenAPI, a consumer can 
+
+    understand and interact with the remote service with a minimal amount of
+    implementation logic. Similar to what
+
+    interfaces have done for lower-level programming, OpenAPI removes the
+    guesswork in calling the service.
+externalDocs:
+  description: Sign up for Qwilr
+  url: 'https://qwilr.com/signup/'
+tags:
+  - name: Projects
+    description: >-
+      Project objects correspond to projects in the Qwilr UI, allowing for the
+      creation of a public-facing Qwilr Page. The Foundry API allows you to
+      create, delete and replace your Pages by sending through JSON objects.
+  - name: Subscriptions
+    description: >-
+      Subscriptions allow you to subscribe and unsubscribe from events on your
+      Qwilr account.
+servers:
+  - url: 'https://api.qwilr.com/v1'
+    description: Production server (uses live data)
+security:
+  - bearerAuth: []
+paths:
+  /projects:
+    post:
+      summary: Create a project
+      description: Creates a project from saved blocks or template.
+      tags:
+        - Projects
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                published:
+                  type: boolean
+                substitutions:
+                  type: object
+              oneOf:
+                - title: Template
+                  properties:
+                    templateId:
+                      $ref: '#/components/schemas/ObjectId'
+                  required:
+                    - templateId
+                - title: Saved Blocks
+                  properties:
+                    blocks:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/SavedBlockId'
+                  required:
+                    - blocks
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /subscriptions:
+    post:
+      summary: Create an event subscription
+      description: >-
+        Creates a new subscription to en event type. New events will be sent to
+        the defined `targetUrl`. You should store the `id` field returned in
+        case you want to cancel the subscription later on.
+      tags:
+        - Subscriptions
+      operationId: subscribeToNotification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event:
+                  $ref: '#/components/schemas/EventType'
+                targetUrl:
+                  type: string
+              required:
+                - event
+                - targetUrl
+      responses:
+        '201':
+          description: Subscribed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  '/subscriptions/{subscriptionId}':
+    delete:
+      summary: Cancel an event subscription
+      description: >-
+        Cancels an event subscription using the `id` field that was returned
+        when the subscription was created.
+      tags:
+        - Subscriptions
+      operationId: unsubscribeToNotification
+      parameters:
+        - name: subscriptionId
+          description: The id returned when your subscription was created
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Unsubscribed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        All requests to API need to be authenticated with your account's API
+        key. You can find your API key in the [Qwilr API
+        Settings](https://app.qwilr.com/#/settings/api):
+
+        ![API Key](api-key.png "API Key")
+
+        Your API key allows anyone to access your Qwilr Pages and account. Be
+        sure to keep it secret! Do not share your secret API keys in any public
+        spaces such as your source repository, client-side code, and so forth.
+
+        **When making a request:**
+
+        * Use your API key with bearer authentication in the headers. For
+        example:<br>“Authorization: Bearer fakeapikey”
+
+        * Send all requests over HTTPS
+  schemas:
+    ObjectId:
+      type: string
+      pattern: '^[a-z0-9]{24}$'
+      title: Id
+      example: 6ee0f841f3cc8900090d82dc
+    SavedBlockId:
+      type: string
+      pattern: '^[a-zA-Z0-9_-]{30}$'
+      title: SavedBlockId
+      example: uCHq6B6_S1EqZ2pyam8YVfUldvoF-Q
+    Block:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectId'
+        name:
+          type: string
+          example: Block Name
+        type:
+          type: string
+          example: text
+      additionalProperties: false
+    Currency:
+      type: string
+      enum:
+        - AUD
+        - USD
+      example: USD
+    ProjectSettings:
+      properties:
+        localisation:
+          type: object
+          properties:
+            language:
+              type: string
+              default: English
+            direction:
+              type: string
+              default: ltr
+        navigation:
+          properties:
+            enabled:
+              type: string
+            widgets:
+              properties:
+                header:
+                  type: object
+                  properties:
+                    fixed:
+                      type: boolean
+                      default: true
+                    showContact:
+                      type: boolean
+                      default: true
+                sidebar:
+                  type: object
+                  properties:
+                    showContact:
+                      type: boolean
+                      default: true
+    ProjectCrmIntegration:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          default: false
+        parentId:
+          $ref: '#/components/schemas/ObjectId'
+        parentType:
+          type: string
+    Project:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectId'
+        name:
+          type: string
+          example: Project Name
+        userId:
+          $ref: '#/components/schemas/ObjectId'
+        accountId:
+          $ref: '#/components/schemas/ObjectId'
+        createdAt:
+          type: string
+          format: date-time
+        lastEditedAt:
+          type: string
+          format: date-time
+        lastEditedBy:
+          $ref: '#/components/schemas/ObjectId'
+        updatedAt:
+          type: string
+          format: date-time
+        publishedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - ''
+            - live
+            - accepted
+            - disabled
+        persistVersion:
+          type: number
+          default: 0
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Block'
+        hasAcceptedEnabled:
+          type: boolean
+          default: false
+        quoteBlockCount:
+          type: number
+          default: 0
+        currency:
+          deprecated: true
+          type: string
+          enum:
+            - AUD
+            - USD
+        currencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Currency'
+        acceptanceData:
+          type: object
+          nullable: true
+        partialAcceptanceData:
+          type: object
+        settings:
+          $ref: '#/components/schemas/ProjectSettings'
+        usingNewEditor:
+          type: boolean
+          default: false
+        usingTCDC:
+          type: boolean
+          default: false
+        allowIndexing:
+          type: boolean
+          default: false
+        enableSocialBadge:
+          type: boolean
+          default: false
+        isTemplate:
+          type: boolean
+          default: false
+        clonedFrom:
+          $ref: '#/components/schemas/ObjectId'
+        templateParent:
+          $ref: '#/components/schemas/ObjectId'
+        hasTemplateChildren:
+          type: boolean
+          default: false
+        links:
+          type: array
+          items:
+            type: object
+        linkSecret:
+          type: string
+        draftLiveBypass:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        sentToCollaborators:
+          type: boolean
+          default: false
+        integrations:
+          properties:
+            sfdc:
+              $ref: '#/components/schemas/ProjectCrmIntegration'
+            hubspot:
+              $ref: '#/components/schemas/ProjectCrmIntegration'
+        crmInfo:
+          type: object
+          properties:
+            connected:
+              type: boolean
+              default: false
+            integration:
+              type: string
+            object:
+              type: string
+        parentFolder:
+          $ref: '#/components/schemas/ObjectId'
+      additionalProperties: false
+    Error:
+      description: Response error
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+      required:
+        - code
+        - message
+    EventType:
+      type: string
+      enum:
+        - projectCreated
+        - projectPublished
+        - projectFirstViewed
+        - projectViewed
+        - projectAccepted
+        - commentThreadCreated
+        - commentReplyCreated
+        - commentMentionsCreated
+        - commentThreadResolved
+      example: projectCreated
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+        event:
+          $ref: '#/components/schemas/EventType'
+        url:
+          type: string
+  responses:
+    BadRequest:
+      description: Request has malformed data or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized access to a resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: No permission to access a resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnprocessableEntity:
+      description: Entity has not passed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    TooManyRequests:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
