@@ -397,11 +397,21 @@ components:
           type: boolean
           default: false
         links:
-          type: array
-          items:
-            type: object
-        linkSecret:
-          type: string
+          type: object
+          properties:
+            secret:
+              type: string
+            editorUrl:
+              type: string
+            publicUrl:
+              type: string
+            pdfUrl:
+              type: string
+          required:
+            - secret
+            - editorUrl
+            - publicUrl
+            - pdfUrl
         draftLiveBypass:
           type: string
         tags:
