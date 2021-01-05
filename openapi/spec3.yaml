@@ -45,7 +45,7 @@ info:
     of the service without access to source
 
     code, documentation, or through network traffic inspection. When properly
-    defined via OpenAPI, a consumer can 
+    defined via OpenAPI, a consumer can
 
     understand and interact with the remote service with a minimal amount of
     implementation logic. Similar to what
@@ -90,6 +90,12 @@ paths:
                   type: boolean
                 substitutions:
                   type: object
+                metadata:
+                  type: object
+                tags:
+                  type: array
+                  items:
+                    type: string
               oneOf:
                 - title: Template
                   properties:
@@ -212,13 +218,13 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
-  /subscriptions:
+  /webhooks:
     post:
-      summary: Create an event subscription
+      summary: Create a webhook event subscription
       description: >-
-        Creates a new subscription to en event type. New events will be sent to
-        the defined `targetUrl`. You should store the `id` field returned in
-        case you want to cancel the subscription later on.
+        Creates a new webhook subscription to an event type. New events will be
+        sent to the defined `targetUrl`. You should store the `id` field
+        returned in case you want to cancel the subscription later on.
       tags:
         - Subscriptions
       operationId: subscribeToNotification
@@ -242,7 +248,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Subscription'
+                $ref: '#/components/schemas/Webhook'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -253,12 +259,12 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
-  '/subscriptions/{subscriptionId}':
+  '/webhooks/{subscriptionId}':
     delete:
-      summary: Cancel an event subscription
+      summary: Cancel a webhook event subscription
       description: >-
-        Cancels an event subscription using the `id` field that was returned
-        when the subscription was created.
+        Cancels a webhook event subscription using the `id` field that was
+        returned when the webhook subscription was created.
       tags:
         - Subscriptions
       operationId: unsubscribeToNotification
@@ -502,6 +508,8 @@ components:
               type: string
             object:
               type: string
+        metadata:
+          type: object
         parentFolder:
           $ref: '#/components/schemas/ObjectId'
       additionalProperties: false
@@ -537,7 +545,7 @@ components:
         - commentMentionsCreated
         - commentThreadResolved
       example: projectCreated
-    Subscription:
+    Webhook:
       type: object
       properties:
         id:

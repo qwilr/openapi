@@ -15,7 +15,7 @@
     "x-logo": {
       "url": "https://qwilr.com/wp-content/uploads/2019/10/qwilr-logo-dark.png"
     },
-    "description": "This is Qwilr API documentation\n# Introduction\nWelcome to the Qwilr Public API documentation. With our API you'll be able to generate Qwilr Pages programmatically. This means you can generate custom quotes, create pages when someone fills out a form, or anything else. The sky is the limit.\n\nOur API is organized around [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer). All calls made are live. If you need to test outside of your live account, get in touch with our team for options around that.\n\nIf you're looking for help with the Qwilr app you can find that in our [help documentation](https://help.qwilr.com/).\n\nIf you have any questions about our API, please get in touch at <a href=\"mailto:help@qwilr.com\">help@qwilr.com</a>.\n\n# OpenAPI Specification\nThe goal of The OpenAPI Specification is to define a standard, language-agnostic interface to REST APIs which\nallows both humans and computers to discover and understand the capabilities of the service without access to source\ncode, documentation, or through network traffic inspection. When properly defined via OpenAPI, a consumer can \nunderstand and interact with the remote service with a minimal amount of implementation logic. Similar to what\ninterfaces have done for lower-level programming, OpenAPI removes the guesswork in calling the service.\n"
+    "description": "This is Qwilr API documentation\n# Introduction\nWelcome to the Qwilr Public API documentation. With our API you'll be able to generate Qwilr Pages programmatically. This means you can generate custom quotes, create pages when someone fills out a form, or anything else. The sky is the limit.\n\nOur API is organized around [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer). All calls made are live. If you need to test outside of your live account, get in touch with our team for options around that.\n\nIf you're looking for help with the Qwilr app you can find that in our [help documentation](https://help.qwilr.com/).\n\nIf you have any questions about our API, please get in touch at <a href=\"mailto:help@qwilr.com\">help@qwilr.com</a>.\n\n# OpenAPI Specification\nThe goal of The OpenAPI Specification is to define a standard, language-agnostic interface to REST APIs which\nallows both humans and computers to discover and understand the capabilities of the service without access to source\ncode, documentation, or through network traffic inspection. When properly defined via OpenAPI, a consumer can\nunderstand and interact with the remote service with a minimal amount of implementation logic. Similar to what\ninterfaces have done for lower-level programming, OpenAPI removes the guesswork in calling the service.\n"
   },
   "externalDocs": {
     "description": "Sign up for Qwilr",
@@ -65,6 +65,15 @@
                   },
                   "substitutions": {
                     "type": "object"
+                  },
+                  "metadata": {
+                    "type": "object"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 },
                 "oneOf": [
@@ -257,10 +266,10 @@
         }
       }
     },
-    "/subscriptions": {
+    "/webhooks": {
       "post": {
-        "summary": "Create an event subscription",
-        "description": "Creates a new subscription to en event type. New events will be sent to the defined `targetUrl`. You should store the `id` field returned in case you want to cancel the subscription later on.",
+        "summary": "Create a webhook event subscription",
+        "description": "Creates a new webhook subscription to an event type. New events will be sent to the defined `targetUrl`. You should store the `id` field returned in case you want to cancel the subscription later on.",
         "tags": [
           "Subscriptions"
         ],
@@ -293,7 +302,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Subscription"
+                  "$ref": "#/components/schemas/Webhook"
                 }
               }
             }
@@ -316,10 +325,10 @@
         }
       }
     },
-    "/subscriptions/{subscriptionId}": {
+    "/webhooks/{subscriptionId}": {
       "delete": {
-        "summary": "Cancel an event subscription",
-        "description": "Cancels an event subscription using the `id` field that was returned when the subscription was created.",
+        "summary": "Cancel a webhook event subscription",
+        "description": "Cancels a webhook event subscription using the `id` field that was returned when the webhook subscription was created.",
         "tags": [
           "Subscriptions"
         ],
@@ -647,6 +656,9 @@
               }
             }
           },
+          "metadata": {
+            "type": "object"
+          },
           "parentFolder": {
             "$ref": "#/components/schemas/ObjectId"
           }
@@ -696,7 +708,7 @@
         ],
         "example": "projectCreated"
       },
-      "Subscription": {
+      "Webhook": {
         "type": "object",
         "properties": {
           "id": {
