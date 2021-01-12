@@ -540,6 +540,7 @@ components:
         - projectFirstViewed
         - projectViewed
         - projectAccepted
+        - projectPreviewAccepted
         - commentThreadCreated
         - commentReplyCreated
         - commentMentionsCreated
