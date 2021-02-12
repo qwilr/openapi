@@ -2,7 +2,7 @@
   "openapi": "3.0.2",
   "info": {
     "version": "1.0.0",
-    "title": "Qwilr Public API",
+    "title": "API Reference",
     "termsOfService": "https://qwilr.com/terms/",
     "contact": {
       "email": "api@qwilr.com",
@@ -15,7 +15,7 @@
     "x-logo": {
       "url": "https://qwilr.com/wp-content/uploads/2019/10/qwilr-logo-dark.png"
     },
-    "description": "This is Qwilr API documentation\n# Introduction\nWelcome to the Qwilr Public API documentation. With our API you'll be able to generate Qwilr Pages programmatically. This means you can generate custom quotes, create pages when someone fills out a form, or anything else. The sky is the limit.\n\nOur API is organized around [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer). All calls made are live. If you need to test outside of your live account, get in touch with our team for options around that.\n\nIf you're looking for help with the Qwilr app you can find that in our [help documentation](https://help.qwilr.com/).\n\nIf you have any questions about our API, please get in touch at <a href=\"mailto:help@qwilr.com\">help@qwilr.com</a>.\n\n# OpenAPI Specification\nThe goal of The OpenAPI Specification is to define a standard, language-agnostic interface to REST APIs which\nallows both humans and computers to discover and understand the capabilities of the service without access to source\ncode, documentation, or through network traffic inspection. When properly defined via OpenAPI, a consumer can\nunderstand and interact with the remote service with a minimal amount of implementation logic. Similar to what\ninterfaces have done for lower-level programming, OpenAPI removes the guesswork in calling the service.\n"
+    "description": "## Introduction\n\nWelcome to the Qwilr Public API documentation. With our API you'll be\nable to generate Qwilr Pages programmatically. This means you can\ngenerate custom quotes, create pages when someone fills out a form,\nor anything else. The sky is the limit.\n\nOur API is organized around [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer).\nAll calls made are live. If you need to test outside of your live account,\nget in touch with our team for options around that.\n\nIf you're looking for help with the Qwilr app you can find that in our\n[help documentation](https://help.qwilr.com/).\n\nIf you have any questions about our API, please get in touch at\n[help@qwilr.com](mailto:help@qwilr.com).\n"
   },
   "externalDocs": {
     "description": "Sign up for Qwilr",
@@ -24,11 +24,11 @@
   "tags": [
     {
       "name": "Projects",
-      "description": "Project objects correspond to projects in the Qwilr UI, allowing for the creation of a public-facing Qwilr Page. The Foundry API allows you to create, delete and replace your Pages by sending through JSON objects."
+      "description": "Project objects correspond to projects in the Qwilr UI, allowing for the\ncreation of a public-facing Qwilr Page. The Foundry API allows you to\ncreate, delete and replace your Pages by sending through JSON objects.\n"
     },
     {
       "name": "Subscriptions",
-      "description": "Subscriptions allow you to subscribe and unsubscribe from events on your Qwilr account."
+      "description": "Subscriptions allow you to subscribe and unsubscribe from events on your Qwilr account.\n"
     }
   ],
   "servers": [
@@ -373,7 +373,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "All requests to API need to be authenticated with your account's API key. You can find your API key in the [Qwilr API Settings](https://app.qwilr.com/#/settings/api):\n![API Key](api-key.png \"API Key\")\nYour API key allows anyone to access your Qwilr Pages and account. Be sure to keep it secret! Do not share your secret API keys in any public spaces such as your source repository, client-side code, and so forth.\n**When making a request:**\n* Use your API key with bearer authentication in the headers. For example:<br>“Authorization: Bearer fakeapikey”\n* Send all requests over HTTPS"
+        "description": "All requests to API need to be authenticated with your account's API key. You can find\nyour API key in the [Qwilr API Settings](https://app.qwilr.com/#/settings/api):\n\nYour API key allows anyone to access your Qwilr Pages and account. Be sure to keep it\nsecret! Do not share your secret API keys in any public spaces such as your source\nrepository, client-side code, and so forth.\n\n**When making a request:**\n\n- Use your API key with bearer authentication in the headers.\nFor example: `Authorization: Bearer fakeapikey`\n- Send all requests over [HTTPS](https://en.wikipedia.org/wiki/HTTPS)\n"
       }
     },
     "schemas": {

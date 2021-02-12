@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   version: 1.0.0
-  title: Qwilr Public API
+  title: API Reference
   termsOfService: 'https://qwilr.com/terms/'
   contact:
     email: api@qwilr.com
@@ -12,57 +12,45 @@ info:
   x-logo:
     url: 'https://qwilr.com/wp-content/uploads/2019/10/qwilr-logo-dark.png'
   description: >
-    This is Qwilr API documentation
+    ## Introduction
 
-    # Introduction
 
-    Welcome to the Qwilr Public API documentation. With our API you'll be able
-    to generate Qwilr Pages programmatically. This means you can generate custom
-    quotes, create pages when someone fills out a form, or anything else. The
-    sky is the limit.
+    Welcome to the Qwilr Public API documentation. With our API you'll be
+
+    able to generate Qwilr Pages programmatically. This means you can
+
+    generate custom quotes, create pages when someone fills out a form,
+
+    or anything else. The sky is the limit.
 
 
     Our API is organized around
-    [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer). All
-    calls made are live. If you need to test outside of your live account, get
-    in touch with our team for options around that.
+    [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer).
+
+    All calls made are live. If you need to test outside of your live account,
+
+    get in touch with our team for options around that.
 
 
-    If you're looking for help with the Qwilr app you can find that in our [help
-    documentation](https://help.qwilr.com/).
+    If you're looking for help with the Qwilr app you can find that in our
+
+    [help documentation](https://help.qwilr.com/).
 
 
-    If you have any questions about our API, please get in touch at <a
-    href="mailto:help@qwilr.com">help@qwilr.com</a>.
+    If you have any questions about our API, please get in touch at
 
-
-    # OpenAPI Specification
-
-    The goal of The OpenAPI Specification is to define a standard,
-    language-agnostic interface to REST APIs which
-
-    allows both humans and computers to discover and understand the capabilities
-    of the service without access to source
-
-    code, documentation, or through network traffic inspection. When properly
-    defined via OpenAPI, a consumer can
-
-    understand and interact with the remote service with a minimal amount of
-    implementation logic. Similar to what
-
-    interfaces have done for lower-level programming, OpenAPI removes the
-    guesswork in calling the service.
+    [help@qwilr.com](mailto:help@qwilr.com).
 externalDocs:
   description: Sign up for Qwilr
   url: 'https://qwilr.com/signup/'
 tags:
   - name: Projects
-    description: >-
+    description: |
       Project objects correspond to projects in the Qwilr UI, allowing for the
       creation of a public-facing Qwilr Page. The Foundry API allows you to
       create, delete and replace your Pages by sending through JSON objects.
   - name: Subscriptions
-    description: >-
+    description: >
       Subscriptions allow you to subscribe and unsubscribe from events on your
       Qwilr account.
 servers:
@@ -294,23 +282,31 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: >-
+      description: >
         All requests to API need to be authenticated with your account's API
-        key. You can find your API key in the [Qwilr API
+        key. You can find
+
+        your API key in the [Qwilr API
         Settings](https://app.qwilr.com/#/settings/api):
 
-        ![API Key](api-key.png "API Key")
 
         Your API key allows anyone to access your Qwilr Pages and account. Be
-        sure to keep it secret! Do not share your secret API keys in any public
-        spaces such as your source repository, client-side code, and so forth.
+        sure to keep it
+
+        secret! Do not share your secret API keys in any public spaces such as
+        your source
+
+        repository, client-side code, and so forth.
+
 
         **When making a request:**
 
-        * Use your API key with bearer authentication in the headers. For
-        example:<br>“Authorization: Bearer fakeapikey”
 
-        * Send all requests over HTTPS
+        - Use your API key with bearer authentication in the headers.
+
+        For example: `Authorization: Bearer fakeapikey`
+
+        - Send all requests over [HTTPS](https://en.wikipedia.org/wiki/HTTPS)
   schemas:
     ObjectId:
       type: string
