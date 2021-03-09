@@ -33,7 +33,7 @@
   ],
   "servers": [
     {
-      "url": "https://api-production.qwilr.com/v1",
+      "url": "https://api.qwilr.com/v1",
       "description": "Production server (uses live data)"
     }
   ],
