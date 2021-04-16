@@ -101,6 +101,7 @@
                             },
                             "foldable": {
                               "type": "object",
+                              "description": "Foldable settings for the block. Folding is only possible with non Quote block types.",
                               "properties": {
                                 "enabled": {
                                   "type": "boolean",
@@ -121,6 +122,18 @@
                               "required": [
                                 "enabled"
                               ]
+                            },
+                            "quoteSettings": {
+                              "x-status": "unpublished",
+                              "$ref": "#/components/schemas/QuoteSettings"
+                            },
+                            "quoteSections": {
+                              "type": "array",
+                              "x-status": "unpublished",
+                              "description": "An array of sections in a saved Quote block",
+                              "items": {
+                                "$ref": "#/components/schemas/QuoteSection"
+                              }
                             }
                           }
                         }
@@ -388,6 +401,211 @@
         "pattern": "^[a-zA-Z0-9_-]{30}$",
         "title": "SavedBlockId",
         "example": "uCHq6B6_S1EqZ2pyam8YVfUldvoF-Q"
+      },
+      "Discount": {
+        "type": "object",
+        "description": "One off discount",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether or not the discount should be applied"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "fixed",
+              "percentage"
+            ],
+            "default": "percentage"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "additionalProperties": false
+      },
+      "QuoteSettings": {
+        "type": "object",
+        "description": "Settings for the quote block",
+        "properties": {
+          "selectionType": {
+            "type": "string",
+            "description": "The type of quote",
+            "enum": [
+              "single",
+              "multi",
+              "combined"
+            ]
+          },
+          "selectionRequired": {
+            "type": "boolean",
+            "description": "If quote selection is enabled, this specifies if a selection must be made"
+          },
+          "showTotalDiscount": {
+            "type": "boolean",
+            "description": "Whether the total discount is shown"
+          },
+          "showTaxTotals": {
+            "type": "boolean",
+            "description": "Whether the total tax is shown"
+          },
+          "showTotalExcludingTax": {
+            "type": "boolean",
+            "description": "Whether the total amount exlcuding tax is shown"
+          },
+          "totalDiscount": {
+            "$ref": "#/components/schemas/Discount"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Text": {
+        "type": "object",
+        "description": "Format for inserting plain text (with newlines)",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      "TextLineItem": {
+        "type": "object",
+        "description": "A text line item, with a description",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "The type of line item",
+            "enum": [
+              "text"
+            ]
+          },
+          "description": {
+            "$ref": "#/components/schemas/Text"
+          }
+        },
+        "required": [
+          "type",
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "FixedCostLineItem": {
+        "type": "object",
+        "description": "A fixed cost line item, with a description and pricing information",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "The type of line item",
+            "enum": [
+              "fixedCost"
+            ]
+          },
+          "description": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "unitPrice": {
+            "type": "number",
+            "description": "The per unit price of the line item",
+            "default": 0
+          },
+          "unitLabel": {
+            "type": "string",
+            "description": "The per unit label of the line item",
+            "default": "Units"
+          },
+          "quantity": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0
+          },
+          "quantityRange": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "min",
+              "max"
+            ]
+          },
+          "taxExempt": {
+            "type": "boolean",
+            "default": false
+          },
+          "optional": {
+            "type": "boolean",
+            "description": "Whether the line item is optional",
+            "default": false
+          },
+          "selected": {
+            "type": "boolean",
+            "description": "Whether an optional line item is selected by default",
+            "default": false
+          },
+          "discount": {
+            "$ref": "#/components/schemas/Discount"
+          }
+        },
+        "required": [
+          "type",
+          "description"
+        ],
+        "additionalProperties": false
+      },
+      "QuoteSection": {
+        "type": "object",
+        "description": "A Quote section containing a group of line items",
+        "properties": {
+          "description": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "lineItems": {
+            "type": "array",
+            "description": "An array of line items for the section",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/TextLineItem"
+                },
+                {
+                  "$ref": "#/components/schemas/FixedCostLineItem"
+                }
+              ]
+            }
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "showSubtotal": {
+                "type": "boolean",
+                "description": "Whether the subtotal amount is shown or not"
+              },
+              "selected": {
+                "type": "boolean",
+                "description": "Whether the quote section is pre-selected"
+              },
+              "selectionRequired": {
+                "type": "boolean",
+                "description": "Whether this quote section must be selected"
+              }
+            }
+          }
+        },
+        "additionalProperties": false
       },
       "Block": {
         "type": "object",
