@@ -406,26 +406,21 @@
         "type": "object",
         "description": "One off discount",
         "properties": {
-          "enabled": {
-            "type": "boolean",
-            "description": "Whether or not the discount should be applied"
-          },
           "type": {
             "type": "string",
             "enum": [
               "fixed",
               "percentage"
-            ],
-            "default": "percentage"
+            ]
           },
           "amount": {
             "type": "number",
-            "minimum": 0,
-            "default": 0
+            "minimum": 0
           }
         },
         "required": [
-          "enabled"
+          "type",
+          "amount"
         ],
         "additionalProperties": false
       },
