@@ -131,6 +131,7 @@
                               "type": "array",
                               "x-status": "unpublished",
                               "description": "An array of sections in a saved Quote block",
+                              "maxItems": 100,
                               "items": {
                                 "$ref": "#/components/schemas/QuoteSection"
                               }
@@ -464,7 +465,8 @@
         "description": "Format for inserting plain text (with newlines)",
         "properties": {
           "text": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 30000
           }
         },
         "required": [
@@ -515,6 +517,7 @@
           "unitLabel": {
             "type": "string",
             "description": "The per unit label of the line item",
+            "maxLength": 200,
             "default": "Units"
           },
           "quantity": {
@@ -571,6 +574,7 @@
           "lineItems": {
             "type": "array",
             "description": "An array of line items for the section",
+            "maxItems": 1000,
             "items": {
               "anyOf": [
                 {
@@ -596,6 +600,9 @@
               "selectionRequired": {
                 "type": "boolean",
                 "description": "Whether this quote section must be selected"
+              },
+              "discount": {
+                "$ref": "#/components/schemas/Discount"
               }
             }
           }
