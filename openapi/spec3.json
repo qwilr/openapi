@@ -124,12 +124,12 @@
                               ]
                             },
                             "quoteSettings": {
-                              "x-status": "unpublished",
+                              "x-status": "beta",
                               "$ref": "#/components/schemas/QuoteSettings"
                             },
                             "quoteSections": {
                               "type": "array",
-                              "x-status": "unpublished",
+                              "x-status": "beta",
                               "description": "An array of sections in a saved Quote block",
                               "maxItems": 100,
                               "items": {
@@ -405,7 +405,6 @@
       },
       "Discount": {
         "type": "object",
-        "description": "One off discount",
         "properties": {
           "type": {
             "type": "string",
@@ -436,7 +435,8 @@
               "single",
               "multi",
               "combined"
-            ]
+            ],
+            "default": "combined"
           },
           "selectionRequired": {
             "type": "boolean",
@@ -454,27 +454,19 @@
             "type": "boolean",
             "description": "Whether the total amount exlcuding tax is shown"
           },
-          "totalDiscount": {
+          "quoteDiscount": {
+            "description": "The discount to apply to the total quote price",
             "$ref": "#/components/schemas/Discount"
           }
         },
         "additionalProperties": false
       },
       "Text": {
-        "type": "object",
-        "description": "Format for inserting plain text (with newlines)",
-        "properties": {
-          "text": {
-            "type": "string",
-            "maxLength": 30000
-          }
-        },
-        "required": [
-          "text"
-        ],
-        "additionalProperties": false
+        "type": "string",
+        "maxLength": 30000
       },
       "TextLineItem": {
+        "title": "Text line item",
         "type": "object",
         "description": "A text line item, with a description",
         "properties": {
@@ -486,6 +478,7 @@
             ]
           },
           "description": {
+            "description": "The text description of the line item",
             "$ref": "#/components/schemas/Text"
           }
         },
@@ -496,6 +489,7 @@
         "additionalProperties": false
       },
       "FixedCostLineItem": {
+        "title": "Fixed cost line item",
         "type": "object",
         "description": "A fixed cost line item, with a description and pricing information",
         "properties": {
@@ -507,23 +501,21 @@
             ]
           },
           "description": {
+            "description": "The text description of the line item",
             "$ref": "#/components/schemas/Text"
           },
           "unitPrice": {
             "type": "number",
-            "description": "The per unit price of the line item",
-            "default": 0
+            "description": "The per unit price of the line item"
           },
           "unitLabel": {
             "type": "string",
             "description": "The per unit label of the line item",
-            "maxLength": 200,
-            "default": "Units"
+            "maxLength": 200
           },
           "quantity": {
             "type": "number",
-            "minimum": 0,
-            "default": 0
+            "minimum": 0
           },
           "quantityRange": {
             "type": "object",
@@ -541,20 +533,18 @@
             ]
           },
           "taxExempt": {
-            "type": "boolean",
-            "default": false
+            "type": "boolean"
           },
           "optional": {
             "type": "boolean",
-            "description": "Whether the line item is optional",
-            "default": false
+            "description": "Whether the line item is optional"
           },
           "selected": {
             "type": "boolean",
-            "description": "Whether an optional line item is selected by default",
-            "default": false
+            "description": "Whether an optional line item is selected by default"
           },
-          "discount": {
+          "lineItemDiscount": {
+            "description": "The discount to apply to the total line item price",
             "$ref": "#/components/schemas/Discount"
           }
         },
@@ -569,6 +559,7 @@
         "description": "A Quote section containing a group of line items",
         "properties": {
           "description": {
+            "description": "The text description of the section",
             "$ref": "#/components/schemas/Text"
           },
           "lineItems": {
@@ -576,7 +567,7 @@
             "description": "An array of line items for the section",
             "maxItems": 1000,
             "items": {
-              "anyOf": [
+              "oneOf": [
                 {
                   "$ref": "#/components/schemas/TextLineItem"
                 },
@@ -601,7 +592,8 @@
                 "type": "boolean",
                 "description": "Whether this quote section must be selected"
               },
-              "discount": {
+              "sectionDiscount": {
+                "description": "The discount to apply to the total section price",
                 "$ref": "#/components/schemas/Discount"
               }
             }
