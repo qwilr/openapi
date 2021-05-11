@@ -688,17 +688,9 @@ components:
     EventType:
       type: string
       enum:
-        - projectCreated
-        - projectPublished
-        - projectFirstViewed
-        - projectViewed
         - projectAccepted
         - projectPreviewAccepted
-        - commentThreadCreated
-        - commentReplyCreated
-        - commentMentionsCreated
-        - commentThreadResolved
-      example: projectCreated
+      example: projectAccepted
     Webhook:
       type: object
       properties:
