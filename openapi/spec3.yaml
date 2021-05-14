@@ -78,8 +78,13 @@ paths:
                   type: boolean
                 substitutions:
                   type: object
+                  description: Mapping of token API reference keys to substitution values.
+                  example:
+                    example_token_key: Example value
+                  additionalProperties:
+                    type: string
                 metadata:
-                  type: object
+                  $ref: '#/components/schemas/Metadata'
                 tags:
                   type: array
                   items:
@@ -379,6 +384,12 @@ components:
     Text:
       type: string
       maxLength: 30000
+    Metadata:
+      type: object
+      maxProperties: 500
+      additionalProperties:
+        maxLength: 500
+        type: string
     TextLineItem:
       title: Text line item
       type: object
@@ -392,6 +403,9 @@ components:
         description:
           description: The text description of the line item
           $ref: '#/components/schemas/Text'
+        metadata:
+          description: Customer's metadata sent along with the request
+          $ref: '#/components/schemas/Metadata'
       required:
         - type
         - description
@@ -440,6 +454,9 @@ components:
         lineItemDiscount:
           description: The discount to apply to the total line item price
           $ref: '#/components/schemas/Discount'
+        metadata:
+          description: Customer's metadata sent along with the request
+          $ref: '#/components/schemas/Metadata'
       required:
         - type
         - description
@@ -474,6 +491,9 @@ components:
             sectionDiscount:
               description: The discount to apply to the total section price
               $ref: '#/components/schemas/Discount'
+        metadata:
+          description: Customer's metadata sent along with the request
+          $ref: '#/components/schemas/Metadata'
       additionalProperties: false
     Block:
       type: object
