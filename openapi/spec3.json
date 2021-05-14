@@ -24,11 +24,11 @@
   "tags": [
     {
       "name": "Projects",
-      "description": "Project objects correspond to projects in the Qwilr UI, allowing for the\ncreation of a public-facing Qwilr Page. The Foundry API allows you to\ncreate, delete and replace your Pages by sending through JSON objects.\n"
+      "description": "Project objects correspond to projects in the Qwilr UI, allowing for the\ncreation of a public-facing Qwilr Page. The Qwilr API allows you to\ncreate, delete and replace your Pages by sending through JSON objects.\n"
     },
     {
       "name": "Subscriptions",
-      "description": "Subscriptions allow you to subscribe and unsubscribe from events on your Qwilr account.\n"
+      "description": "Webhooks allow you to subscribe and unsubscribe from events on your Qwilr account.\n"
     }
   ],
   "servers": [
@@ -58,10 +58,12 @@
               "schema": {
                 "properties": {
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Title of the project, visible as the browser title."
                   },
                   "published": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "False will prevent page the from being viewed publicly, True will allow it to be viewed publicly."
                   },
                   "substitutions": {
                     "type": "object",
@@ -78,6 +80,7 @@
                   },
                   "tags": {
                     "type": "array",
+                    "description": "These tags to be applied to your project. Tags are case-sensitive.",
                     "items": {
                       "type": "string"
                     }
@@ -188,7 +191,7 @@
     "/blocks/saved": {
       "get": {
         "summary": "Get saved blocks",
-        "description": "Get saved blocks",
+        "description": "Allows you to retrieve a list of saved blocks from your account, with block names. Useful in developer workflow for mapping block names to saved block IDs.",
         "tags": [
           "Blocks"
         ],
@@ -228,7 +231,7 @@
     "/projects/{projectId}": {
       "put": {
         "summary": "Update project",
-        "description": "Currently only `published` property supported.",
+        "description": "Allows you to update the `published` property.",
         "tags": [
           "Projects"
         ],
@@ -394,7 +397,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "All requests to API need to be authenticated with your account's API key. You can find\nyour API key in the [Qwilr API Settings](https://app.qwilr.com/#/settings/api):\n\nYour API key allows anyone to access your Qwilr Pages and account. Be sure to keep it\nsecret! Do not share your secret API keys in any public spaces such as your source\nrepository, client-side code, and so forth.\n\n**When making a request:**\n\n- Use your API key with bearer authentication in the headers.\nFor example: `Authorization: Bearer fakeapikey`\n- Send all requests over [HTTPS](https://en.wikipedia.org/wiki/HTTPS)\n"
+        "description": "All requests to API need to be authenticated with your account's access token. You can find\nyour access token in the [Qwilr API Settings](https://app.qwilr.com/#/settings/api):\n\nYour access token allows anyone to access your Qwilr Pages and account. Be sure to keep it\nsecret! Do not share your secret access tokens in any public spaces such as your source\nrepository, client-side code, and so forth.\n\n**When making a request:**\n\n- Use your access token with bearer authentication in the headers.\nFor example: `Authorization: Bearer fakeaccesstoken`\n- Send all requests over [HTTPS](https://en.wikipedia.org/wiki/HTTPS)\n"
       }
     },
     "schemas": {
@@ -474,6 +477,7 @@
       },
       "Metadata": {
         "type": "object",
+        "description": "Data you provide, that will be returned as part of all Webhooks.",
         "maxProperties": 500,
         "additionalProperties": {
           "maxLength": 500,

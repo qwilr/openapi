@@ -47,12 +47,12 @@ tags:
   - name: Projects
     description: |
       Project objects correspond to projects in the Qwilr UI, allowing for the
-      creation of a public-facing Qwilr Page. The Foundry API allows you to
+      creation of a public-facing Qwilr Page. The Qwilr API allows you to
       create, delete and replace your Pages by sending through JSON objects.
   - name: Subscriptions
     description: >
-      Subscriptions allow you to subscribe and unsubscribe from events on your
-      Qwilr account.
+      Webhooks allow you to subscribe and unsubscribe from events on your Qwilr
+      account.
 servers:
   - url: 'https://api.qwilr.com/v1'
     description: Production server (uses live data)
@@ -74,8 +74,12 @@ paths:
               properties:
                 name:
                   type: string
+                  description: 'Title of the project, visible as the browser title.'
                 published:
                   type: boolean
+                  description: >-
+                    False will prevent page the from being viewed publicly, True
+                    will allow it to be viewed publicly.
                 substitutions:
                   type: object
                   description: Mapping of token API reference keys to substitution values.
@@ -87,6 +91,9 @@ paths:
                   $ref: '#/components/schemas/Metadata'
                 tags:
                   type: array
+                  description: >-
+                    These tags to be applied to your project. Tags are
+                    case-sensitive.
                   items:
                     type: string
               oneOf:
@@ -162,7 +169,10 @@ paths:
   /blocks/saved:
     get:
       summary: Get saved blocks
-      description: Get saved blocks
+      description: >-
+        Allows you to retrieve a list of saved blocks from your account, with
+        block names. Useful in developer workflow for mapping block names to
+        saved block IDs.
       tags:
         - Blocks
       operationId: getSavedBlocks
@@ -188,7 +198,7 @@ paths:
   '/projects/{projectId}':
     put:
       summary: Update project
-      description: Currently only `published` property supported.
+      description: Allows you to update the `published` property.
       tags:
         - Projects
       operationId: updateProject
@@ -301,18 +311,18 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: >
-        All requests to API need to be authenticated with your account's API
-        key. You can find
+        All requests to API need to be authenticated with your account's access
+        token. You can find
 
-        your API key in the [Qwilr API
+        your access token in the [Qwilr API
         Settings](https://app.qwilr.com/#/settings/api):
 
 
-        Your API key allows anyone to access your Qwilr Pages and account. Be
-        sure to keep it
+        Your access token allows anyone to access your Qwilr Pages and account.
+        Be sure to keep it
 
-        secret! Do not share your secret API keys in any public spaces such as
-        your source
+        secret! Do not share your secret access tokens in any public spaces such
+        as your source
 
         repository, client-side code, and so forth.
 
@@ -320,9 +330,9 @@ components:
         **When making a request:**
 
 
-        - Use your API key with bearer authentication in the headers.
+        - Use your access token with bearer authentication in the headers.
 
-        For example: `Authorization: Bearer fakeapikey`
+        For example: `Authorization: Bearer fakeaccesstoken`
 
         - Send all requests over [HTTPS](https://en.wikipedia.org/wiki/HTTPS)
   schemas:
@@ -386,6 +396,7 @@ components:
       maxLength: 30000
     Metadata:
       type: object
+      description: 'Data you provide, that will be returned as part of all Webhooks.'
       maxProperties: 500
       additionalProperties:
         maxLength: 500
