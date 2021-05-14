@@ -196,6 +196,47 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests'
   '/projects/{projectId}':
+    get:
+      summary: Get a project
+      description: Returns a project
+      tags:
+        - Projects
+      operationId: getProject
+      parameters:
+        - name: projectId
+          required: true
+          in: path
+          schema:
+            $ref: '#/components/schemas/ObjectId'
+        - name: expand
+          in: query
+          style: form
+          explode: false
+          allowReserved: true
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - metadata
+                - acceptance
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
     put:
       summary: Update project
       description: Allows you to update the `published` property.
@@ -506,66 +547,6 @@ components:
           description: Customer's metadata sent along with the request
           $ref: '#/components/schemas/Metadata'
       additionalProperties: false
-    Block:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/ObjectId'
-        name:
-          type: string
-          example: Block Name
-        type:
-          type: string
-          example: text
-      additionalProperties: false
-    Currency:
-      type: string
-      enum:
-        - AUD
-        - USD
-      example: USD
-    ProjectSettings:
-      properties:
-        localisation:
-          type: object
-          properties:
-            language:
-              type: string
-              default: English
-            direction:
-              type: string
-              default: ltr
-        navigation:
-          properties:
-            enabled:
-              type: string
-            widgets:
-              properties:
-                header:
-                  type: object
-                  properties:
-                    fixed:
-                      type: boolean
-                      default: true
-                    showContact:
-                      type: boolean
-                      default: true
-                sidebar:
-                  type: object
-                  properties:
-                    showContact:
-                      type: boolean
-                      default: true
-    ProjectCrmIntegration:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          default: false
-        parentId:
-          $ref: '#/components/schemas/ObjectId'
-        parentType:
-          type: string
     Project:
       type: object
       properties:
@@ -574,88 +555,23 @@ components:
         name:
           type: string
           example: Project Name
-        userId:
-          $ref: '#/components/schemas/ObjectId'
-        accountId:
-          $ref: '#/components/schemas/ObjectId'
-        createdAt:
-          type: string
-          format: date-time
-        lastEditedAt:
-          type: string
-          format: date-time
-        lastEditedBy:
-          $ref: '#/components/schemas/ObjectId'
-        updatedAt:
-          type: string
-          format: date-time
-        publishedAt:
-          type: string
-          format: date-time
         status:
           type: string
           enum:
-            - ''
+            - draft
             - live
+            - accepting
             - accepted
             - disabled
-        persistVersion:
-          type: number
-          default: 0
-        blocks:
+        tags:
           type: array
           items:
-            $ref: '#/components/schemas/Block'
-        hasAcceptedEnabled:
-          type: boolean
-          default: false
-        quoteBlockCount:
-          type: number
-          default: 0
-        currency:
-          deprecated: true
-          type: string
-          enum:
-            - AUD
-            - USD
-        currencies:
-          type: array
-          items:
-            $ref: '#/components/schemas/Currency'
-        acceptanceData:
+            type: string
+        metadata:
           type: object
-          nullable: true
-        partialAcceptanceData:
-          type: object
-        settings:
-          $ref: '#/components/schemas/ProjectSettings'
-        usingNewEditor:
-          type: boolean
-          default: false
-        usingTCDC:
-          type: boolean
-          default: false
-        allowIndexing:
-          type: boolean
-          default: false
-        enableSocialBadge:
-          type: boolean
-          default: false
-        isTemplate:
-          type: boolean
-          default: false
-        clonedFrom:
-          $ref: '#/components/schemas/ObjectId'
-        templateParent:
-          $ref: '#/components/schemas/ObjectId'
-        hasTemplateChildren:
-          type: boolean
-          default: false
         links:
           type: object
           properties:
-            secret:
-              type: string
             editorUrl:
               type: string
             publicUrl:
@@ -663,39 +579,107 @@ components:
             pdfUrl:
               type: string
           required:
-            - secret
             - editorUrl
             - publicUrl
             - pdfUrl
-        draftLiveBypass:
-          type: string
-        tags:
-          type: array
-          items:
-            type: string
-        sentToCollaborators:
-          type: boolean
-          default: false
-        integrations:
-          properties:
-            sfdc:
-              $ref: '#/components/schemas/ProjectCrmIntegration'
-            hubspot:
-              $ref: '#/components/schemas/ProjectCrmIntegration'
-        crmInfo:
+        acceptance:
           type: object
+          nullable: true
           properties:
-            connected:
-              type: boolean
-              default: false
-            integration:
-              type: string
-            object:
-              type: string
-        metadata:
-          type: object
-        parentFolder:
-          $ref: '#/components/schemas/ObjectId'
+            acceptersTotal:
+              type: integer
+            acceptersCount:
+              type: integer
+            accepters:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  legalEntity:
+                    type: string
+                  esigned:
+                    type: boolean
+                  acceptedAt:
+                    type: string
+                required:
+                  - name
+                  - email
+                  - legalEntity
+                  - esigned
+                  - acceptedAt
+            quote:
+              type: object
+              properties:
+                amount:
+                  type: number
+                amountExcludingTax:
+                  type: number
+                quoteSections:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      selected:
+                        type: boolean
+                      metadata:
+                        type: object
+                      lineItems:
+                        type: array
+                        items:
+                          oneOf:
+                            - title: Text line item
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - text
+                                metadata:
+                                  type: object
+                              required:
+                                - type
+                            - title: Fixed cost line item
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  enum:
+                                    - fixedCost
+                                unitPrice:
+                                  type: number
+                                quantity:
+                                  type: number
+                                selected:
+                                  type: boolean
+                                metadata:
+                                  type: object
+                              required:
+                                - type
+                                - unitPrice
+                                - quantity
+                                - selected
+                    required:
+                      - selected
+                      - lineItems
+              required:
+                - amount
+                - amountExcludingTax
+                - quoteSections
+          required:
+            - acceptersTotal
+            - acceptersCount
+            - accepters
+          additionalProperties: false
+      required:
+        - id
+        - name
+        - status
+        - tags
+        - links
       additionalProperties: false
     Error:
       description: Response error
