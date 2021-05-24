@@ -276,6 +276,33 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests'
   /webhooks:
+    get:
+      summary: Get a list of all webhook subscriptions
+      description: >-
+        Allows you to retrieve a list of all the webhook subscriptions that you
+        have created using the create webhook subscription endpoint.
+      tags:
+        - Subscriptions
+      operationId: getSubscriptions
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Webhook'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
     post:
       summary: Create a webhook event subscription
       description: >-
@@ -569,6 +596,7 @@ components:
             type: string
         metadata:
           type: object
+          nullable: true
         links:
           type: object
           properties:
@@ -627,6 +655,7 @@ components:
                         type: boolean
                       metadata:
                         type: object
+                        nullable: true
                       lineItems:
                         type: array
                         items:
@@ -640,6 +669,7 @@ components:
                                     - text
                                 metadata:
                                   type: object
+                                  nullable: true
                               required:
                                 - type
                             - title: Fixed cost line item
@@ -657,6 +687,7 @@ components:
                                   type: boolean
                                 metadata:
                                   type: object
+                                  nullable: true
                               required:
                                 - type
                                 - unitPrice

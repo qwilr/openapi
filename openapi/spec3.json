@@ -353,6 +353,44 @@
       }
     },
     "/webhooks": {
+      "get": {
+        "summary": "Get a list of all webhook subscriptions",
+        "description": "Allows you to retrieve a list of all the webhook subscriptions that you have created using the create webhook subscription endpoint.",
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "getSubscriptions",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Webhook"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
       "post": {
         "summary": "Create a webhook event subscription",
         "description": "Creates a new webhook subscription to an event type. New events will be sent to the defined `targetUrl`. You should store the `id` field returned in case you want to cancel the subscription later on.",
@@ -721,7 +759,8 @@
             }
           },
           "metadata": {
-            "type": "object"
+            "type": "object",
+            "nullable": true
           },
           "links": {
             "type": "object",
@@ -800,7 +839,8 @@
                           "type": "boolean"
                         },
                         "metadata": {
-                          "type": "object"
+                          "type": "object",
+                          "nullable": true
                         },
                         "lineItems": {
                           "type": "array",
@@ -817,7 +857,8 @@
                                     ]
                                   },
                                   "metadata": {
-                                    "type": "object"
+                                    "type": "object",
+                                    "nullable": true
                                   }
                                 },
                                 "required": [
@@ -844,7 +885,8 @@
                                     "type": "boolean"
                                   },
                                   "metadata": {
-                                    "type": "object"
+                                    "type": "object",
+                                    "nullable": true
                                   }
                                 },
                                 "required": [
