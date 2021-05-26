@@ -49,6 +49,15 @@ tags:
       Project objects correspond to projects in the Qwilr UI, allowing for the
       creation of a public-facing Qwilr Page. The Qwilr API allows you to
       create, delete and replace your Pages by sending through JSON objects.
+  - name: Blocks
+    description: >
+      Block objects correspond to blocks in the Qwilr UI. Pages and templates
+      are
+
+      composed of a series of blocks. The Qwilr API allows you to get saved
+      blocks
+
+      from your account.
   - name: Subscriptions
     description: >
       Webhooks allow you to subscribe and unsubscribe from events on your Qwilr
