@@ -115,7 +115,7 @@
                             },
                             "foldable": {
                               "type": "object",
-                              "description": "Foldable settings for the block. Folding is only possible with non Quote block types.",
+                              "description": "Foldable settings for the block. Folding is only possible with non Quote block types. Don't set this field for your Quote block.",
                               "properties": {
                                 "enabled": {
                                   "type": "boolean",
@@ -144,7 +144,7 @@
                             "quoteSections": {
                               "type": "array",
                               "x-status": "beta",
-                              "description": "An array of sections in a saved Quote block",
+                              "description": "An array of sections in a saved Quote block. Only relevant if you want to customise your quote block. Ignore this field for non Quote block types.",
                               "maxItems": 100,
                               "items": {
                                 "$ref": "#/components/schemas/QuoteSection"
@@ -644,7 +644,7 @@
       },
       "QuoteSettings": {
         "type": "object",
-        "description": "Settings for the quote block",
+        "description": "Settings for the quote block. Only relevant if you want to customise your quote block. Ignore this field for non Quote block types.",
         "properties": {
           "selectionType": {
             "type": "string",
@@ -658,19 +658,19 @@
           },
           "selectionRequired": {
             "type": "boolean",
-            "description": "If quote selection is enabled, this specifies if a selection must be made"
+            "description": "If quote selection is enabled, this specifies if a selection must be made (default: false)"
           },
           "showTotalDiscount": {
             "type": "boolean",
-            "description": "Whether the total discount is shown"
+            "description": "Whether the total discount is shown (default: false)"
           },
           "showTaxTotals": {
             "type": "boolean",
-            "description": "Whether the total tax is shown"
+            "description": "Whether the total tax is shown (default: false)"
           },
           "showTotalExcludingTax": {
             "type": "boolean",
-            "description": "Whether the total amount exlcuding tax is shown"
+            "description": "Whether the total amount excluding tax is shown (default: false)"
           },
           "quoteDiscount": {
             "description": "The discount to apply to the total quote price",
@@ -746,10 +746,12 @@
           },
           "quantity": {
             "type": "number",
+            "description": "The quantity of the line item",
             "minimum": 0
           },
           "quantityRange": {
             "type": "object",
+            "description": "A range your client can choose the quantity from (when you don't want to provide a fixed quantity). This field is optional",
             "properties": {
               "min": {
                 "type": "number"
@@ -764,15 +766,16 @@
             ]
           },
           "taxExempt": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether the line item is exempt from tax (default: false)"
           },
           "optional": {
             "type": "boolean",
-            "description": "Whether the line item is optional"
+            "description": "Whether the line item is optional (default: false)"
           },
           "selected": {
             "type": "boolean",
-            "description": "Whether an optional line item is selected by default"
+            "description": "Whether an optional line item is selected by default (default: false)"
           },
           "lineItemDiscount": {
             "description": "The discount to apply to the total line item price",
@@ -817,15 +820,27 @@
             "properties": {
               "showSubtotal": {
                 "type": "boolean",
-                "description": "Whether the subtotal amount is shown or not"
+                "description": "Whether the subtotal amount is shown or not (default: true)"
+              },
+              "showUnitPrice": {
+                "type": "boolean",
+                "description": "Whether or not to show the unit price column (default: true)"
+              },
+              "showQuantity": {
+                "type": "boolean",
+                "description": "Whether or not to show the quantity column (default: true)"
+              },
+              "showCost": {
+                "type": "boolean",
+                "description": "Whether or not to show the cost column (default: true)"
               },
               "selected": {
                 "type": "boolean",
-                "description": "Whether the quote section is pre-selected"
+                "description": "Whether the quote section is pre-selected (default: false). Only relevant when the quote's selectionType is 'multi' or 'single'"
               },
               "selectionRequired": {
                 "type": "boolean",
-                "description": "Whether this quote section must be selected"
+                "description": "Whether this quote section must be selected (default: false). Only relevant when the quote's selectionType is 'multi' or 'single'"
               },
               "sectionDiscount": {
                 "description": "The discount to apply to the total section price",
