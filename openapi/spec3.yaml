@@ -44,9 +44,9 @@ externalDocs:
   description: Sign up for Qwilr
   url: 'https://qwilr.com/signup/'
 tags:
-  - name: Projects
+  - name: Pages
     description: |
-      Project objects correspond to projects in the Qwilr UI, allowing for the
+      Page objects correspond to pages in the Qwilr UI, allowing for the
       creation of a public-facing Qwilr Page. The Qwilr API allows you to
       create, delete and replace your Pages by sending through JSON objects.
   - name: Blocks
@@ -68,13 +68,13 @@ servers:
 security:
   - bearerAuth: []
 paths:
-  /projects:
+  /pages:
     post:
-      summary: Create a project
-      description: Creates a project from saved blocks or template.
+      summary: Create a page
+      description: Creates a page from saved blocks or template.
       tags:
-        - Projects
-      operationId: createProject
+        - Pages
+      operationId: createPage
       requestBody:
         required: true
         content:
@@ -83,7 +83,7 @@ paths:
               properties:
                 name:
                   type: string
-                  description: 'Title of the project, visible as the browser title.'
+                  description: 'Title of the page, visible as the browser title.'
                 published:
                   type: boolean
                   description: >-
@@ -101,7 +101,7 @@ paths:
                 tags:
                   type: array
                   description: >-
-                    These tags to be applied to your project. Tags are
+                    These tags to be applied to your page. Tags are
                     case-sensitive.
                   items:
                     type: string
@@ -164,7 +164,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
+                $ref: '#/components/schemas/Page'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -204,15 +204,15 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
-  '/projects/{projectId}':
+  '/pages/{pageId}':
     get:
-      summary: Get a project
-      description: Returns a project
+      summary: Get a page
+      description: Returns a page
       tags:
-        - Projects
-      operationId: getProject
+        - Pages
+      operationId: getPage
       parameters:
-        - name: projectId
+        - name: pageId
           required: true
           in: path
           schema:
@@ -235,7 +235,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
+                $ref: '#/components/schemas/Page'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -247,13 +247,13 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests'
     put:
-      summary: Update project
+      summary: Update page
       description: Allows you to update the `published` property.
       tags:
-        - Projects
-      operationId: updateProject
+        - Pages
+      operationId: updatePage
       parameters:
-        - name: projectId
+        - name: pageId
           required: true
           in: path
           schema:
@@ -269,11 +269,11 @@ paths:
               additionalProperties: false
       responses:
         '200':
-          description: The project has been successfully updated
+          description: The page has been successfully updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Project'
+                $ref: '#/components/schemas/Page'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -335,6 +335,74 @@ paths:
               required:
                 - event
                 - targetUrl
+      callbacks:
+        pageAccepted:
+          '{$request.body#/targetUrl}':
+            post:
+              summary: pageAccepted
+              requestBody:
+                description: Webhook callback that fires when a page is accepted
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        event:
+                          type: string
+                          enum:
+                            - pageAccepted
+                        page:
+                          type: object
+                          properties:
+                            id:
+                              $ref: '#/components/schemas/ObjectId'
+                            metadata:
+                              $ref: '#/components/schemas/Metadata'
+                          required:
+                            - id
+                      required:
+                        - event
+                        - page
+              responses:
+                '200':
+                  description: Return this if your server accepts the callback
+                '410':
+                  description: Return this if you want to unsubscribe from the callback
+        pagePreviewAccepted:
+          '{$request.body#/targetUrl}':
+            post:
+              summary: pagePreviewAccepted
+              requestBody:
+                description: >-
+                  Webhook callback that fires when a page is 'accepted' when 
+                  [previewing the acceptance
+                  process](https://help.qwilr.com/article/175-getting-documents-accepted#process).
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        event:
+                          type: string
+                          enum:
+                            - pagePreviewAccepted
+                        page:
+                          type: object
+                          properties:
+                            id:
+                              $ref: '#/components/schemas/ObjectId'
+                            metadata:
+                              $ref: '#/components/schemas/Metadata'
+                          required:
+                            - id
+                      required:
+                        - event
+                        - page
+              responses:
+                '200':
+                  description: Return this if your server accepts the callback
+                '410':
+                  description: Return this if you want to unsubscribe from the callback
       responses:
         '201':
           description: Subscribed
@@ -583,14 +651,14 @@ components:
           description: Customer's metadata sent along with the request
           $ref: '#/components/schemas/Metadata'
       additionalProperties: false
-    Project:
+    Page:
       type: object
       properties:
         id:
           $ref: '#/components/schemas/ObjectId'
         name:
           type: string
-          example: Project Name
+          example: Page Name
         status:
           type: string
           enum:
@@ -743,9 +811,9 @@ components:
     EventType:
       type: string
       enum:
-        - projectAccepted
-        - projectPreviewAccepted
-      example: projectAccepted
+        - pageAccepted
+        - pagePreviewAccepted
+      example: pageAccepted
     Webhook:
       type: object
       properties:
