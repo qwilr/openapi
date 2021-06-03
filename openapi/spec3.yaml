@@ -106,12 +106,6 @@ paths:
                   items:
                     type: string
               oneOf:
-                - title: Template
-                  properties:
-                    templateId:
-                      $ref: '#/components/schemas/ObjectId'
-                  required:
-                    - templateId
                 - title: Saved Blocks
                   properties:
                     blocks:
@@ -163,6 +157,12 @@ paths:
                               $ref: '#/components/schemas/QuoteSection'
                   required:
                     - blocks
+                - title: Template
+                  properties:
+                    templateId:
+                      $ref: '#/components/schemas/ObjectId'
+                  required:
+                    - templateId
       responses:
         '201':
           description: Created
@@ -486,11 +486,6 @@ components:
 
         - Send all requests over [HTTPS](https://en.wikipedia.org/wiki/HTTPS)
   schemas:
-    ObjectId:
-      type: string
-      pattern: '^[a-z0-9]{24}$'
-      title: Id
-      example: 6ee0f841f3cc8900090d82dc
     SavedBlockId:
       type: string
       pattern: '^[a-zA-Z0-9_-]{30}$'
@@ -553,26 +548,6 @@ components:
       additionalProperties:
         maxLength: 500
         type: string
-    TextLineItem:
-      title: Text line item
-      type: object
-      description: 'A text line item, with a description'
-      properties:
-        type:
-          type: string
-          description: The type of line item
-          enum:
-            - text
-        description:
-          description: The text description of the line item
-          $ref: '#/components/schemas/Text'
-        metadata:
-          description: Customer's metadata sent along with the request
-          $ref: '#/components/schemas/Metadata'
-      required:
-        - type
-        - description
-      additionalProperties: false
     FixedCostLineItem:
       title: Fixed cost line item
       type: object
@@ -631,6 +606,26 @@ components:
         - type
         - description
       additionalProperties: false
+    TextLineItem:
+      title: Text line item
+      type: object
+      description: 'A text line item, with a description'
+      properties:
+        type:
+          type: string
+          description: The type of line item
+          enum:
+            - text
+        description:
+          description: The text description of the line item
+          $ref: '#/components/schemas/Text'
+        metadata:
+          description: Customer's metadata sent along with the request
+          $ref: '#/components/schemas/Metadata'
+      required:
+        - type
+        - description
+      additionalProperties: false
     QuoteSection:
       type: object
       description: A Quote section containing a group of line items
@@ -644,8 +639,8 @@ components:
           maxItems: 1000
           items:
             oneOf:
-              - $ref: '#/components/schemas/TextLineItem'
               - $ref: '#/components/schemas/FixedCostLineItem'
+              - $ref: '#/components/schemas/TextLineItem'
         settings:
           type: object
           properties:
@@ -679,6 +674,11 @@ components:
           description: Customer's metadata sent along with the request
           $ref: '#/components/schemas/Metadata'
       additionalProperties: false
+    ObjectId:
+      type: string
+      pattern: '^[a-z0-9]{24}$'
+      title: Id
+      example: 6ee0f841f3cc8900090d82dc
     Page:
       type: object
       properties:
