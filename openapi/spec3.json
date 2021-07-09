@@ -261,8 +261,10 @@
                 "type": "string",
                 "enum": [
                   "metadata",
-                  "acceptance"
-                ]
+                  "acceptance",
+                  "previewAcceptance"
+                ],
+                "x-unpublished": "previewAcceptance"
               }
             }
           }
@@ -855,6 +857,146 @@
         "title": "Id",
         "example": "6ee0f841f3cc8900090d82dc"
       },
+      "Acceptance": {
+        "type": "object",
+        "nullable": true,
+        "properties": {
+          "acceptersTotal": {
+            "type": "integer"
+          },
+          "acceptersCount": {
+            "type": "integer"
+          },
+          "accepters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "legalEntity": {
+                  "type": "string"
+                },
+                "esigned": {
+                  "type": "boolean"
+                },
+                "acceptedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "email",
+                "legalEntity",
+                "esigned",
+                "acceptedAt"
+              ]
+            }
+          },
+          "quote": {
+            "type": "object",
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "amountExcludingTax": {
+                "type": "number"
+              },
+              "quoteSections": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "selected": {
+                      "type": "boolean"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "lineItems": {
+                      "type": "array",
+                      "items": {
+                        "oneOf": [
+                          {
+                            "title": "Text line item",
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "text"
+                                ]
+                              },
+                              "metadata": {
+                                "type": "object",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "type"
+                            ]
+                          },
+                          {
+                            "title": "Fixed cost line item",
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "fixedCost"
+                                ]
+                              },
+                              "unitPrice": {
+                                "type": "number"
+                              },
+                              "quantity": {
+                                "type": "number"
+                              },
+                              "selected": {
+                                "type": "boolean"
+                              },
+                              "metadata": {
+                                "type": "object",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "unitPrice",
+                              "quantity",
+                              "selected"
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "selected",
+                    "lineItems"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "amount",
+              "amountExcludingTax",
+              "quoteSections"
+            ]
+          }
+        },
+        "required": [
+          "acceptersTotal",
+          "acceptersCount",
+          "accepters"
+        ],
+        "additionalProperties": false
+      },
       "Page": {
         "type": "object",
         "properties": {
@@ -905,144 +1047,11 @@
             ]
           },
           "acceptance": {
-            "type": "object",
-            "nullable": true,
-            "properties": {
-              "acceptersTotal": {
-                "type": "integer"
-              },
-              "acceptersCount": {
-                "type": "integer"
-              },
-              "accepters": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string"
-                    },
-                    "email": {
-                      "type": "string"
-                    },
-                    "legalEntity": {
-                      "type": "string"
-                    },
-                    "esigned": {
-                      "type": "boolean"
-                    },
-                    "acceptedAt": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "name",
-                    "email",
-                    "legalEntity",
-                    "esigned",
-                    "acceptedAt"
-                  ]
-                }
-              },
-              "quote": {
-                "type": "object",
-                "properties": {
-                  "amount": {
-                    "type": "number"
-                  },
-                  "amountExcludingTax": {
-                    "type": "number"
-                  },
-                  "quoteSections": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "selected": {
-                          "type": "boolean"
-                        },
-                        "metadata": {
-                          "type": "object",
-                          "nullable": true
-                        },
-                        "lineItems": {
-                          "type": "array",
-                          "items": {
-                            "oneOf": [
-                              {
-                                "title": "Text line item",
-                                "type": "object",
-                                "properties": {
-                                  "type": {
-                                    "type": "string",
-                                    "enum": [
-                                      "text"
-                                    ]
-                                  },
-                                  "metadata": {
-                                    "type": "object",
-                                    "nullable": true
-                                  }
-                                },
-                                "required": [
-                                  "type"
-                                ]
-                              },
-                              {
-                                "title": "Fixed cost line item",
-                                "type": "object",
-                                "properties": {
-                                  "type": {
-                                    "type": "string",
-                                    "enum": [
-                                      "fixedCost"
-                                    ]
-                                  },
-                                  "unitPrice": {
-                                    "type": "number"
-                                  },
-                                  "quantity": {
-                                    "type": "number"
-                                  },
-                                  "selected": {
-                                    "type": "boolean"
-                                  },
-                                  "metadata": {
-                                    "type": "object",
-                                    "nullable": true
-                                  }
-                                },
-                                "required": [
-                                  "type",
-                                  "unitPrice",
-                                  "quantity",
-                                  "selected"
-                                ]
-                              }
-                            ]
-                          }
-                        }
-                      },
-                      "required": [
-                        "selected",
-                        "lineItems"
-                      ]
-                    }
-                  }
-                },
-                "required": [
-                  "amount",
-                  "amountExcludingTax",
-                  "quoteSections"
-                ]
-              }
-            },
-            "required": [
-              "acceptersTotal",
-              "acceptersCount",
-              "accepters"
-            ],
-            "additionalProperties": false
+            "$ref": "#/components/schemas/Acceptance"
+          },
+          "previewAcceptance": {
+            "x-status": "unpublished",
+            "$ref": "#/components/schemas/Acceptance"
           }
         },
         "required": [
