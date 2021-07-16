@@ -70,14 +70,7 @@
                     "description": "False will prevent page the from being viewed publicly, True will allow it to be viewed publicly."
                   },
                   "substitutions": {
-                    "type": "object",
-                    "description": "Mapping of token API reference keys to substitution values.",
-                    "example": {
-                      "example_token_key": "Example value"
-                    },
-                    "additionalProperties": {
-                      "type": "string"
-                    }
+                    "$ref": "#/components/schemas/Substitutions"
                   },
                   "metadata": {
                     "$ref": "#/components/schemas/Metadata"
@@ -856,6 +849,31 @@
         "pattern": "^[a-z0-9]{24}$",
         "title": "Id",
         "example": "6ee0f841f3cc8900090d82dc"
+      },
+      "Substitutions": {
+        "type": "object",
+        "description": "Mapping of token API reference keys to substitution values.",
+        "example": {
+          "example_token_key": "Example value"
+        },
+        "additionalProperties": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "A text substitution. Replaces the token with a plain text value."
+            },
+            {
+              "type": "array",
+              "description": "A repeating token substitution. Content is repeated for each entry in the array.",
+              "items": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        }
       },
       "Acceptance": {
         "type": "object",
