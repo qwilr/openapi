@@ -256,8 +256,7 @@
                   "metadata",
                   "acceptance",
                   "previewAcceptance"
-                ],
-                "x-unpublished": "previewAcceptance"
+                ]
               }
             }
           }
@@ -1068,7 +1067,6 @@
             "$ref": "#/components/schemas/Acceptance"
           },
           "previewAcceptance": {
-            "x-status": "unpublished",
             "$ref": "#/components/schemas/Acceptance"
           }
         },

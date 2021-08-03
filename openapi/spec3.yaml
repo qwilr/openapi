@@ -230,7 +230,6 @@ paths:
                 - metadata
                 - acceptance
                 - previewAcceptance
-              x-unpublished: previewAcceptance
       responses:
         '200':
           description: Success
@@ -827,7 +826,6 @@ components:
         acceptance:
           $ref: '#/components/schemas/Acceptance'
         previewAcceptance:
-          x-status: unpublished
           $ref: '#/components/schemas/Acceptance'
       required:
         - id
