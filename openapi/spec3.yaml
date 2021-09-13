@@ -352,6 +352,9 @@ paths:
                           type: string
                           enum:
                             - pageAccepted
+                        idempotencyKey:
+                          type: string
+                          example: 6ee0f841f3cc8900090d82dc
                         page:
                           type: object
                           properties:
@@ -387,6 +390,9 @@ paths:
                           type: string
                           enum:
                             - pagePreviewAccepted
+                        idempotencyKey:
+                          type: string
+                          example: 61386c853b700e0006d54901
                         page:
                           type: object
                           properties:
