@@ -70,7 +70,7 @@
                     "description": "False will prevent page the from being viewed publicly, True will allow it to be viewed publicly."
                   },
                   "substitutions": {
-                    "$ref": "#/components/schemas/Substitutions"
+                    "$ref": "#/components/schemas/PageSubstitutions"
                   },
                   "metadata": {
                     "$ref": "#/components/schemas/Metadata"
@@ -131,8 +131,15 @@
                               "items": {
                                 "$ref": "#/components/schemas/QuoteSection"
                               }
+                            },
+                            "substitutions": {
+                              "$ref": "#/components/schemas/BlockSubstitutions"
                             }
-                          }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "additionalProperties": false
                         }
                       }
                     },
@@ -851,33 +858,58 @@
         },
         "additionalProperties": false
       },
+      "TextTokenSubstitutions": {
+        "title": "Text Token Substitutions",
+        "type": "string",
+        "description": "A text substitution. Replaces the token with a plain text value."
+      },
+      "RepeatingTokenSubstitutions": {
+        "title": "Repeating Token Substitutions",
+        "type": "array",
+        "description": "A repeating token substitution. Content is repeated for each entry in the array.",
+        "items": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "BlockSubstitutions": {
+        "type": "object",
+        "description": "Mapping of token API reference keys to substitution values used inside a block.",
+        "example": {
+          "block_token_key": "Example value"
+        },
+        "additionalProperties": {
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/TextTokenSubstitutions"
+            },
+            {
+              "$ref": "#/components/schemas/RepeatingTokenSubstitutions"
+            }
+          ]
+        }
+      },
       "ObjectId": {
         "type": "string",
         "pattern": "^[a-z0-9]{24}$",
         "title": "Id",
         "example": "6ee0f841f3cc8900090d82dc"
       },
-      "Substitutions": {
+      "PageSubstitutions": {
         "type": "object",
-        "description": "Mapping of token API reference keys to substitution values.",
+        "description": "Mapping of token API reference keys to substitution values used throughout the page. The values can be overwritten if the same keys are defined in the block-level substitutions.",
         "example": {
-          "example_token_key": "Example value"
+          "page_token_key": "Example value"
         },
         "additionalProperties": {
           "oneOf": [
             {
-              "type": "string",
-              "description": "A text substitution. Replaces the token with a plain text value."
+              "$ref": "#/components/schemas/TextTokenSubstitutions"
             },
             {
-              "type": "array",
-              "description": "A repeating token substitution. Content is repeated for each entry in the array.",
-              "items": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
+              "$ref": "#/components/schemas/RepeatingTokenSubstitutions"
             }
           ]
         }
