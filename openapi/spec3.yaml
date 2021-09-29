@@ -702,6 +702,9 @@ components:
         block.
       example:
         block_token_key: Example value
+        repeating_token_key:
+          - item_property: value1
+          - item_property: value2
       additionalProperties:
         oneOf:
           - $ref: '#/components/schemas/TextTokenSubstitutions'
@@ -719,6 +722,9 @@ components:
         defined in the block-level substitutions.
       example:
         page_token_key: Example value
+        repeating_token_key:
+          - item_property: value1
+          - item_property: value2
       additionalProperties:
         oneOf:
           - $ref: '#/components/schemas/TextTokenSubstitutions'

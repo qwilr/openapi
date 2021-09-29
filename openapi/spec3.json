@@ -878,7 +878,15 @@
         "type": "object",
         "description": "Mapping of token API reference keys to substitution values used inside a block.",
         "example": {
-          "block_token_key": "Example value"
+          "block_token_key": "Example value",
+          "repeating_token_key": [
+            {
+              "item_property": "value1"
+            },
+            {
+              "item_property": "value2"
+            }
+          ]
         },
         "additionalProperties": {
           "oneOf": [
@@ -901,7 +909,15 @@
         "type": "object",
         "description": "Mapping of token API reference keys to substitution values used throughout the page. The values can be overwritten if the same keys are defined in the block-level substitutions.",
         "example": {
-          "page_token_key": "Example value"
+          "page_token_key": "Example value",
+          "repeating_token_key": [
+            {
+              "item_property": "value1"
+            },
+            {
+              "item_property": "value2"
+            }
+          ]
         },
         "additionalProperties": {
           "oneOf": [
