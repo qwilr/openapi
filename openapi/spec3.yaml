@@ -415,6 +415,82 @@ paths:
                   description: Return this if your server accepts the callback
                 '410':
                   description: Return this if you want to unsubscribe from the callback
+        pageFirstViewed:
+          '{$request.body#/targetUrl}':
+            post:
+              summary: pageFirstViewed
+              requestBody:
+                description: >-
+                  Webhook callback that fires when a page is viewed for the
+                  first time.
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        event:
+                          type: string
+                          enum:
+                            - pageFirstViewed
+                        idempotencyKey:
+                          type: string
+                          example: 6ee0f841f3cc8900090d82dcqgco0OBdTtu3
+                        page:
+                          type: object
+                          properties:
+                            id:
+                              $ref: '#/components/schemas/ObjectId'
+                            metadata:
+                              $ref: '#/components/schemas/Metadata'
+                          required:
+                            - id
+                      required:
+                        - event
+                        - page
+              responses:
+                '200':
+                  description: Return this if your server accepts the callback
+                '410':
+                  description: Return this if you want to unsubscribe from the callback
+              x-status: unpublished
+        pageViewed:
+          '{$request.body#/targetUrl}':
+            post:
+              summary: pageViewed
+              requestBody:
+                description: >-
+                  Webhook callback that fires when a page is viewed (regardless
+                  of whether is the first view or a subsequent view).
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        event:
+                          type: string
+                          enum:
+                            - pageViewed
+                        idempotencyKey:
+                          type: string
+                          example: 6ee0f841f3cc8900090d82dcqgco0OBdTtu3
+                        page:
+                          type: object
+                          properties:
+                            id:
+                              $ref: '#/components/schemas/ObjectId'
+                            metadata:
+                              $ref: '#/components/schemas/Metadata'
+                          required:
+                            - id
+                      required:
+                        - event
+                        - page
+              responses:
+                '200':
+                  description: Return this if your server accepts the callback
+                '410':
+                  description: Return this if you want to unsubscribe from the callback
+              x-status: unpublished
       responses:
         '201':
           description: Subscribed
@@ -895,6 +971,11 @@ components:
       enum:
         - pageAccepted
         - pagePreviewAccepted
+        - pageViewed
+        - pageFirstViewed
+      x-unpublished:
+        - pageViewed
+        - pageFirstViewed
       example: pageAccepted
     Webhook:
       type: object
