@@ -541,7 +541,7 @@
               "post": {
                 "summary": "pageFirstViewed",
                 "requestBody": {
-                  "description": "Webhook callback that fires when a page is viewed for the first time.",
+                  "description": "Webhook callback that fires when a page is viewed for the first time. It is intended to capture public page viewers while excluding views by logged in Qwilr users. We also provide an [IP filtering feature](https://help.qwilr.com/article/315-filtering-out-internal-views) to exclude other internal views, if required.",
                   "content": {
                     "application/json": {
                       "schema": {
@@ -570,11 +570,16 @@
                             "required": [
                               "id"
                             ]
+                          },
+                          "viewedUrl": {
+                            "type": "string",
+                            "example": "https://pages.qwilr.com/My-Qwilr-Page-UeOsR7ATyqBo"
                           }
                         },
                         "required": [
                           "event",
-                          "page"
+                          "page",
+                          "viewedUrl"
                         ]
                       }
                     }
@@ -587,8 +592,7 @@
                   "410": {
                     "description": "Return this if you want to unsubscribe from the callback"
                   }
-                },
-                "x-status": "unpublished"
+                }
               }
             }
           },
@@ -597,7 +601,7 @@
               "post": {
                 "summary": "pageViewed",
                 "requestBody": {
-                  "description": "Webhook callback that fires when a page is viewed (regardless of whether is the first view or a subsequent view).",
+                  "description": "Webhook callback that fires when a page is viewed (regardless of whether it is the first view or a subsequent view). It is intended to capture public page viewers while excluding views by logged in Qwilr users. We also provide an [IP filtering feature](https://help.qwilr.com/article/315-filtering-out-internal-views) to exclude other internal views, if required.",
                   "content": {
                     "application/json": {
                       "schema": {
@@ -626,11 +630,16 @@
                             "required": [
                               "id"
                             ]
+                          },
+                          "viewedUrl": {
+                            "type": "string",
+                            "example": "https://pages.qwilr.com/My-Qwilr-Page-UeOsR7ATyqBo"
                           }
                         },
                         "required": [
                           "event",
-                          "page"
+                          "page",
+                          "viewedUrl"
                         ]
                       }
                     }
@@ -643,8 +652,7 @@
                   "410": {
                     "description": "Return this if you want to unsubscribe from the callback"
                   }
-                },
-                "x-status": "unpublished"
+                }
               }
             }
           }
@@ -1280,10 +1288,6 @@
         "enum": [
           "pageAccepted",
           "pagePreviewAccepted",
-          "pageViewed",
-          "pageFirstViewed"
-        ],
-        "x-unpublished": [
           "pageViewed",
           "pageFirstViewed"
         ],
