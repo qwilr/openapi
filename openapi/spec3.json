@@ -1092,6 +1092,7 @@
           },
           "quote": {
             "type": "object",
+            "nullable": true,
             "properties": {
               "amount": {
                 "type": "number"
