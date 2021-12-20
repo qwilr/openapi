@@ -842,12 +842,28 @@ components:
                 type: boolean
               acceptedAt:
                 type: string
+              customForm:
+                type: array
+                nullable: true
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                    value:
+                      type: string
             required:
               - name
               - email
               - legalEntity
               - esigned
               - acceptedAt
+        auditTrailPdf:
+          type: string
+          description: >-
+            URL for the audit trail PDF download. Please note that it might take
+            a few minutes for the PDF to be available after the Qwilr page is
+            accepted.
         quote:
           type: object
           nullable: true
