@@ -139,6 +139,9 @@ paths:
                           quoteSettings:
                             x-status: beta
                             $ref: '#/components/schemas/QuoteSettings'
+                          acceptSettings:
+                            x-status: beta
+                            $ref: '#/components/schemas/AcceptBlockSettings'
                           quoteSections:
                             type: array
                             x-status: beta
@@ -161,6 +164,9 @@ paths:
                   properties:
                     templateId:
                       $ref: '#/components/schemas/ObjectId'
+                    acceptSettings:
+                      x-status: beta
+                      $ref: '#/components/schemas/AcceptTemplateSettings'
                   required:
                     - templateId
       responses:
@@ -635,6 +641,42 @@ components:
           description: The discount to apply to the total quote price
           $ref: '#/components/schemas/Discount'
       additionalProperties: false
+    PostAcceptance:
+      type: object
+      description: >-
+        Configures a post-acceptance redirect for the page; accepters will be
+        redirected upon accepting the page. If not provided, it will not be
+        enabled.
+      properties:
+        enabled:
+          description: Whether or not the post-acceptance action is enabled for the page.
+          type: boolean
+          default: true
+        url:
+          description: >-
+            The URL that the accepter will be redirected to upon acceptance. The
+            URL must have a protocol specified and it must be one of `http`,
+            `https`, or no protocol specified and will be defaulted to `https`.
+            Other protocols will be rejected with an error on page creation.
+          type: string
+        continueLabel:
+          description: >-
+            The label that will be used on the button to perform the
+            post-acceptance action.
+          default: Continue
+          type: string
+          maxLength: 140
+      required:
+        - url
+    AcceptBlockSettings:
+      type: object
+      description: >-
+        Configures settings for the accept block. Only relevant if you want to
+        customise your accept block. Including this field when the block is not
+        an Accept block is invalid and will result in an error.
+      properties:
+        postAcceptance:
+          $ref: '#/components/schemas/PostAcceptance'
     Text:
       type: string
       maxLength: 30000
@@ -804,6 +846,15 @@ components:
       pattern: '^[a-z0-9]{24}$'
       title: Id
       example: 6ee0f841f3cc8900090d82dc
+    AcceptTemplateSettings:
+      type: object
+      description: >-
+        Configures settings for the accept block in the template being used.
+        Only relevant if you have an accept block. Setting this without an
+        accept block in the template will result in an error.
+      properties:
+        postAcceptance:
+          $ref: '#/components/schemas/PostAcceptance'
     PageSubstitutions:
       type: object
       description: >-
@@ -852,6 +903,17 @@ components:
                       type: string
                     value:
                       type: string
+              postAcceptance:
+                description: >-
+                  Post-acceptance details for the accepter. Null if
+                  post-acceptance not enabled for accepter.
+                type: object
+                nullable: true
+                properties:
+                  url:
+                    type: string
+                required:
+                  - url
             required:
               - name
               - email
