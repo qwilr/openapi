@@ -439,7 +439,7 @@
               "post": {
                 "summary": "pageAccepted",
                 "requestBody": {
-                  "description": "Webhook callback that fires when a page is accepted",
+                  "description": "Webhook callback that fires when a page is accepted.",
                   "content": {
                     "application/json": {
                       "schema": {
@@ -480,10 +480,7 @@
                 },
                 "responses": {
                   "200": {
-                    "description": "Return this if your server accepts the callback"
-                  },
-                  "410": {
-                    "description": "Return this if you want to unsubscribe from the callback"
+                    "description": "Return this if your server accepts the callback. This acknowledgement should be made before the timeout of 30s. If the timeout occurs, the callback will be retried, up to 5 times."
                   }
                 }
               }
@@ -494,7 +491,7 @@
               "post": {
                 "summary": "pagePreviewAccepted",
                 "requestBody": {
-                  "description": "Webhook callback that fires when a page is 'accepted' when  [previewing the acceptance process](https://help.qwilr.com/article/175-getting-documents-accepted#process).",
+                  "description": "Webhook callback that fires when a page is \"accepted\" as part of [previewing the acceptance process](https://help.qwilr.com/article/175-getting-documents-accepted#process).",
                   "content": {
                     "application/json": {
                       "schema": {
@@ -535,10 +532,7 @@
                 },
                 "responses": {
                   "200": {
-                    "description": "Return this if your server accepts the callback"
-                  },
-                  "410": {
-                    "description": "Return this if you want to unsubscribe from the callback"
+                    "description": "Return this if your server accepts the callback. This acknowledgement should be made before the timeout of 30s. If the timeout occurs, the callback will be retried, up to 5 times."
                   }
                 }
               }
@@ -549,7 +543,7 @@
               "post": {
                 "summary": "pageFirstViewed",
                 "requestBody": {
-                  "description": "Webhook callback that fires when a page is viewed for the first time. It is intended to capture public page viewers while excluding views by logged in Qwilr users. We also provide an [IP filtering feature](https://help.qwilr.com/article/315-filtering-out-internal-views) to exclude other internal views, if required.",
+                  "description": "Webhook callback that fires when a page is viewed for the first time. It is intended to capture public page viewers while excluding views by logged-in Qwilr users. We also provide an [IP filtering feature](https://help.qwilr.com/article/315-filtering-out-internal-views) to exclude other internal views, if required.",
                   "content": {
                     "application/json": {
                       "schema": {
@@ -595,10 +589,7 @@
                 },
                 "responses": {
                   "200": {
-                    "description": "Return this if your server accepts the callback"
-                  },
-                  "410": {
-                    "description": "Return this if you want to unsubscribe from the callback"
+                    "description": "Return this if your server accepts the callback. This acknowledgement should be made before the timeout of 30s. If the timeout occurs, the callback will be retried, up to 5 times."
                   }
                 }
               }
@@ -609,7 +600,7 @@
               "post": {
                 "summary": "pageViewed",
                 "requestBody": {
-                  "description": "Webhook callback that fires when a page is viewed (regardless of whether it is the first view or a subsequent view). It is intended to capture public page viewers while excluding views by logged in Qwilr users. We also provide an [IP filtering feature](https://help.qwilr.com/article/315-filtering-out-internal-views) to exclude other internal views, if required.",
+                  "description": "Webhook callback that fires when a page is viewed (regardless of whether it is the first view or a subsequent view). It is intended to capture public page viewers while excluding views by logged-in Qwilr users. We also provide an [IP filtering feature](https://help.qwilr.com/article/315-filtering-out-internal-views) to exclude other internal views, if required.",
                   "content": {
                     "application/json": {
                       "schema": {
@@ -655,10 +646,7 @@
                 },
                 "responses": {
                   "200": {
-                    "description": "Return this if your server accepts the callback"
-                  },
-                  "410": {
-                    "description": "Return this if you want to unsubscribe from the callback"
+                    "description": "Return this if your server accepts the callback. This acknowledgement should be made before the timeout of 30s. If the timeout occurs, the callback will be retried, up to 5 times."
                   }
                 }
               }
