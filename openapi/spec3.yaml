@@ -86,9 +86,11 @@ paths:
                   description: 'Title of the page, visible as the browser title.'
                 published:
                   type: boolean
+                  default: false
                   description: >-
-                    False will prevent page the from being viewed publicly, True
-                    will allow it to be viewed publicly.
+                    Whether the page is publically available; `false` means the
+                    page will be in [Draft
+                    status](https://help.qwilr.com/article/578-dashboard-page-statuses).
                 substitutions:
                   $ref: '#/components/schemas/PageSubstitutions'
                 metadata:
@@ -121,15 +123,15 @@ paths:
                                 type: boolean
                                 default: false
                                 description: >-
-                                  The block has fold/unfold button shown if the
-                                  property is true, otherwise ability to
-                                  fold/unfold is disabled.
+                                  The block has the fold/unfold button shown if
+                                  the property is `true`, otherwise the ability
+                                  to fold/unfold is disabled.
                               isFolded:
                                 type: boolean
                                 default: false
                                 description: >-
                                   The block is folded by default if the property
-                                  is true, otherwise it's expanded.
+                                  is `true`, otherwise it's expanded.
                               label:
                                 type: string
                                 default: Show / Hide
