@@ -91,6 +91,7 @@ paths:
                     Whether the page is publically available; `false` means the
                     page will be in [Draft
                     status](https://help.qwilr.com/article/578-dashboard-page-statuses).
+                    Default is `false`.
                 substitutions:
                   $ref: '#/components/schemas/PageSubstitutions'
                 metadata:
@@ -125,17 +126,21 @@ paths:
                                 description: >-
                                   The block has the fold/unfold button shown if
                                   the property is `true`, otherwise the ability
-                                  to fold/unfold is disabled.
+                                  to fold/unfold is disabled. Default is
+                                  `false`.
                               isFolded:
                                 type: boolean
                                 default: false
                                 description: >-
                                   The block is folded by default if the property
-                                  is `true`, otherwise it's expanded.
+                                  is `true`, otherwise it's expanded. Default is
+                                  `false`.
                               label:
                                 type: string
                                 default: Show / Hide
-                                description: The label shown when folding is enabled.
+                                description: >-
+                                  The label shown when folding is enabled.
+                                  Default is `Show / Hide`.
                             required:
                               - enabled
                           quoteSettings:
@@ -604,6 +609,126 @@ components:
       pattern: '^[a-zA-Z0-9_-]{30}$'
       title: SavedBlockId
       example: uCHq6B6_S1EqZ2pyam8YVfUldvoF-Q
+    Currency:
+      type: string
+      enum:
+        - USD
+        - EUR
+        - JPY
+        - GBP
+        - AUD
+        - CHF
+        - CAD
+        - MXN
+        - CNY
+        - NZD
+        - SEK
+        - RUB
+        - AFN
+        - ALL
+        - DZD
+        - AOA
+        - ANG
+        - ARS
+        - AMD
+        - AZN
+        - BHD
+        - BDT
+        - BYR
+        - BZD
+        - BOB
+        - BAM
+        - BWP
+        - BRL
+        - BND
+        - BGN
+        - BIF
+        - KHR
+        - CVE
+        - XAF
+        - CLP
+        - COP
+        - KMF
+        - CRC
+        - HRK
+        - CZK
+        - DJF
+        - DOP
+        - CDF
+        - EGP
+        - ERN
+        - ETB
+        - GEL
+        - GHS
+        - DKK
+        - GTQ
+        - GNF
+        - HNL
+        - HKD
+        - HUF
+        - ISK
+        - INR
+        - IDR
+        - IRR
+        - IQD
+        - ILS
+        - JMD
+        - JOD
+        - KZT
+        - KES
+        - KWD
+        - LBP
+        - LYD
+        - MOP
+        - MKD
+        - MGA
+        - MYR
+        - MUR
+        - MDL
+        - MAD
+        - MZN
+        - MMK
+        - NAD
+        - NPR
+        - NIO
+        - XOF
+        - NGN
+        - NOK
+        - OMR
+        - PKR
+        - PAB
+        - PYG
+        - PEN
+        - PHP
+        - PLN
+        - QAR
+        - RON
+        - RWF
+        - SAR
+        - RSD
+        - SGD
+        - SOS
+        - ZAR
+        - KRW
+        - LKR
+        - SDG
+        - SYP
+        - TWD
+        - TZS
+        - THB
+        - TOP
+        - TTD
+        - TND
+        - TRY
+        - UGX
+        - UAH
+        - AED
+        - UYU
+        - UZS
+        - VEF
+        - VND
+        - YER
+      example: USD
     Discount:
       type: object
       properties:
@@ -627,7 +752,10 @@ components:
       properties:
         selectionType:
           type: string
-          description: The type of quote
+          description: >-
+            The [selection
+            type/mode](/docs/guides/quote-data-lifecycle#quote-block-fundamentals)
+            of the quote. Default is `combined`.
           enum:
             - single
             - multi
@@ -637,18 +765,27 @@ components:
           type: boolean
           description: >-
             If quote selection is enabled, this specifies if a selection must be
-            made (default: false)
+            made. Default is `false`.
+          default: false
+        currency:
+          description: >-
+            Currency for the quote block. If not specified then the currency of
+            the saved quote block will be retained.
+          $ref: '#/components/schemas/Currency'
         showTotalDiscount:
           type: boolean
-          description: 'Whether the total discount is shown (default: false)'
+          description: Whether the total discount is shown. Default is `false`.
+          default: false
         showTaxTotals:
           type: boolean
-          description: 'Whether the total tax is shown (default: false)'
+          description: Whether the total tax is shown. Default is `false`.
+          default: false
         showTotalExcludingTax:
           type: boolean
-          description: 'Whether the total amount excluding tax is shown (default: false)'
+          description: Whether the total amount excluding tax is shown. Default is `false`.
+          default: false
         quoteDiscount:
-          description: The discount to apply to the total quote price
+          description: The discount to apply to the total quote price.
           $ref: '#/components/schemas/Discount'
       additionalProperties: false
     PostAcceptance:
@@ -659,7 +796,9 @@ components:
         enabled.
       properties:
         enabled:
-          description: Whether or not the post-acceptance action is enabled for the page.
+          description: >-
+            Whether or not the post-acceptance action is enabled for the page.
+            Default is `true`.
           type: boolean
           default: true
         url:
@@ -672,7 +811,7 @@ components:
         continueLabel:
           description: >-
             The label that will be used on the button to perform the
-            post-acceptance action.
+            post-acceptance action. Default is `Continue`.
           default: Continue
           type: string
           maxLength: 140
@@ -736,15 +875,18 @@ components:
             - max
         taxExempt:
           type: boolean
-          description: 'Whether the line item is exempt from tax (default: false)'
+          default: false
+          description: Whether the line item is exempt from tax. Default is `false`.
         optional:
           type: boolean
-          description: 'Whether the line item is optional (default: false)'
+          default: false
+          description: Whether the line item is optional. Default is `false`.
         selected:
           type: boolean
+          default: false
           description: >-
-            Whether an optional line item is selected by default (default:
-            false)
+            Whether an optional line item is selected by default. Default is
+            `false`.
         lineItemDiscount:
           description: The discount to apply to the total line item price
           $ref: '#/components/schemas/Discount'
@@ -795,27 +937,34 @@ components:
           properties:
             showSubtotal:
               type: boolean
-              description: 'Whether the subtotal amount is shown or not (default: true)'
+              default: true
+              description: Whether the subtotal amount is shown or not. Default is `true`.
             showUnitPrice:
               type: boolean
-              description: 'Whether or not to show the unit price column (default: true)'
+              default: true
+              description: Whether or not to show the unit price column. Default is `true`.
             showQuantity:
               type: boolean
-              description: 'Whether or not to show the quantity column (default: true)'
+              default: true
+              description: Whether or not to show the quantity column. Default is `true`.
             showCost:
               type: boolean
-              description: 'Whether or not to show the cost column (default: true)'
+              default: true
+              description: Whether or not to show the cost column. Default is `true`.
             selected:
               type: boolean
+              default: false
               description: >-
-                Whether the quote section is pre-selected (default: false). Only
-                relevant when the quote's selectionType is 'multi' or 'single'
+                Whether the quote section is pre-selected. Only relevant when
+                the quote's selectionType is 'multi' or 'single'. Default is
+                `false`.
             selectionRequired:
               type: boolean
+              default: false
               description: >-
-                Whether this quote section must be selected (default: false).
-                Only relevant when the quote's selectionType is 'multi' or
-                'single'
+                Whether this quote section must be selected. Only relevant when
+                the quote's selectionType is 'multi' or 'single'". Default is
+                `false`.
             sectionDiscount:
               description: The discount to apply to the total section price
               $ref: '#/components/schemas/Discount'
