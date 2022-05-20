@@ -875,15 +875,12 @@ components:
             - max
         taxExempt:
           type: boolean
-          default: false
           description: Whether the line item is exempt from tax. Default is `false`.
         optional:
           type: boolean
-          default: false
           description: Whether the line item is optional. Default is `false`.
         selected:
           type: boolean
-          default: false
           description: >-
             Whether an optional line item is selected by default. Default is
             `false`.
