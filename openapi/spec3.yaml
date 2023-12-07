@@ -143,15 +143,14 @@ paths:
                                   Default is `Show / Hide`.
                             required:
                               - enabled
-                          quoteSettings:
-                            x-status: beta
-                            $ref: '#/components/schemas/QuoteSettings'
+                          splashSettings:
+                            $ref: '#/components/schemas/SplashSettings'
                           acceptSettings:
-                            x-status: beta
                             $ref: '#/components/schemas/AcceptBlockSettings'
+                          quoteSettings:
+                            $ref: '#/components/schemas/QuoteSettings'
                           quoteSections:
                             type: array
-                            x-status: beta
                             description: >-
                               An array of sections in a saved Quote block. Only
                               relevant if you want to customise your quote
@@ -172,7 +171,6 @@ paths:
                     templateId:
                       $ref: '#/components/schemas/ObjectId'
                     acceptSettings:
-                      x-status: beta
                       $ref: '#/components/schemas/AcceptTemplateSettings'
                   required:
                     - templateId
@@ -609,6 +607,73 @@ components:
       pattern: '^[a-zA-Z0-9_-]{30}$'
       title: SavedBlockId
       example: uCHq6B6_S1EqZ2pyam8YVfUldvoF-Q
+    SplashSettings:
+      type: object
+      description: >-
+        Configures settings for the splash block. Only relevant if you want to
+        customise your splash block. Including this field when the block is not
+        an Splash block is invalid and will result in an error.
+      oneOf:
+        - title: Background image
+          properties:
+            imageUrl:
+              type: string
+              description: >-
+                URL of the background image. Ensure the image is publicly
+                available to the Internet.
+          required:
+            - imageUrl
+          additionalProperties: false
+        - title: Background video
+          properties:
+            videoUrl:
+              type: string
+              description: >-
+                URL of the background video. We currently only support YouTube
+                videos. Ensure the video is publicly available to the Internet.
+          required:
+            - videoUrl
+          additionalProperties: false
+      example:
+        imageUrl: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6'
+    PostAcceptance:
+      type: object
+      description: >-
+        Configures a post-acceptance redirect for the page; accepters will be
+        redirected upon accepting the page. If not provided, it will not be
+        enabled.
+      properties:
+        enabled:
+          description: >-
+            Whether or not the post-acceptance action is enabled for the page.
+            Default is `true`.
+          type: boolean
+          default: true
+        url:
+          description: >-
+            The URL that the accepter will be redirected to upon acceptance. The
+            URL must have a protocol specified and it must be one of `http`,
+            `https`, or no protocol specified and will be defaulted to `https`.
+            Other protocols will be rejected with an error on page creation.
+          type: string
+        continueLabel:
+          description: >-
+            The label that will be used on the button to perform the
+            post-acceptance action. Default is `Continue`.
+          default: Continue
+          type: string
+          maxLength: 140
+      required:
+        - url
+    AcceptBlockSettings:
+      type: object
+      description: >-
+        Configures settings for the accept block. Only relevant if you want to
+        customise your accept block. Including this field when the block is not
+        an Accept block is invalid and will result in an error.
+      properties:
+        postAcceptance:
+          $ref: '#/components/schemas/PostAcceptance'
     Currency:
       type: string
       enum:
@@ -789,47 +854,15 @@ components:
           description: The discount to apply to the total quote price.
           $ref: '#/components/schemas/Discount'
       additionalProperties: false
-    PostAcceptance:
-      type: object
-      description: >-
-        Configures a post-acceptance redirect for the page; accepters will be
-        redirected upon accepting the page. If not provided, it will not be
-        enabled.
-      properties:
-        enabled:
-          description: >-
-            Whether or not the post-acceptance action is enabled for the page.
-            Default is `true`.
-          type: boolean
-          default: true
-        url:
-          description: >-
-            The URL that the accepter will be redirected to upon acceptance. The
-            URL must have a protocol specified and it must be one of `http`,
-            `https`, or no protocol specified and will be defaulted to `https`.
-            Other protocols will be rejected with an error on page creation.
-          type: string
-        continueLabel:
-          description: >-
-            The label that will be used on the button to perform the
-            post-acceptance action. Default is `Continue`.
-          default: Continue
-          type: string
-          maxLength: 140
-      required:
-        - url
-    AcceptBlockSettings:
-      type: object
-      description: >-
-        Configures settings for the accept block. Only relevant if you want to
-        customise your accept block. Including this field when the block is not
-        an Accept block is invalid and will result in an error.
-      properties:
-        postAcceptance:
-          $ref: '#/components/schemas/PostAcceptance'
     Text:
       type: string
       maxLength: 30000
+    FeaturesList:
+      type: array
+      description: 'For plan cards, the features that will be listed below the plan card.'
+      items:
+        type: string
+      maxItems: 100
     Metadata:
       type: object
       description: 'Data you provide, that will be returned as part of all Webhooks.'
@@ -886,8 +919,29 @@ components:
             Whether an optional line item is selected by default. Default is
             `false`.
         lineItemDiscount:
-          description: The discount to apply to the total line item price
+          description: The discount to apply to the total line item price.
           $ref: '#/components/schemas/Discount'
+        billingSchedule:
+          type: string
+          description: >-
+            Set the billing frequency, whether it's a one-off or recurring.
+            Default is `one-off`.
+          enum:
+            - one-off
+            - weekly
+            - monthly
+            - quarterly
+            - yearly
+        recommended:
+          type: boolean
+          description: >-
+            For plan cards, whether it is highlighted as recommended. Default is
+            `false`.
+        featuresList:
+          description: >-
+            For plan cards, the features that will be listed below the plan
+            card.
+          $ref: '#/components/schemas/FeaturesList'
         metadata:
           description: Customer's metadata sent along with the request
           $ref: '#/components/schemas/Metadata'
@@ -917,14 +971,31 @@ components:
       additionalProperties: false
     QuoteSection:
       type: object
-      description: A Quote section containing a group of line items
+      description: A Quote section containing a group of line items or plan cards.
       properties:
+        displayMode:
+          type: string
+          description: >-
+            Display the quote section as a
+            [table](https://help.qwilr.com/article/741-creating-tables-in-the-quote-block)
+            or
+            [plans](https://help.qwilr.com/article/740-creating-pricing-cards-in-the-quote-block).
+            Default is `table`.
+          enum:
+            - table
+            - plans
+          default: table
+        itemSingleSelect:
+          type: boolean
+          description: >-
+            Whether only one line item or plan card in this section can be
+            selected at a time. Default is `false` for tables, `true` for plans.
         description:
-          description: The text description of the section
+          description: The text description of the section.
           $ref: '#/components/schemas/Text'
         lineItems:
           type: array
-          description: An array of line items for the section
+          description: An array of line items (or plan cards) for the section.
           maxItems: 1000
           items:
             oneOf:
@@ -964,8 +1035,20 @@ components:
                 the quote's selectionType is 'multi' or 'single'". Default is
                 `false`.
             sectionDiscount:
-              description: The discount to apply to the total section price
+              description: The discount to apply to the total section price.
               $ref: '#/components/schemas/Discount'
+            showFeatures:
+              type: boolean
+              default: true
+              description: >-
+                Whether the feature lists are shown below each plan card.
+                Default is `true`.
+            groupItemsByBillingSchedule:
+              type: boolean
+              default: false
+              description: >-
+                Whether the plan cards are grouped by billing frequency. Default
+                is `false`.
         metadata:
           description: Customer's metadata sent along with the request
           $ref: '#/components/schemas/Metadata'
@@ -1128,6 +1211,14 @@ components:
                               type: number
                             quantity:
                               type: number
+                            billingSchedule:
+                              type: string
+                              enum:
+                                - one-off
+                                - weekly
+                                - monthly
+                                - quarterly
+                                - yearly
                             selected:
                               type: boolean
                             metadata:
@@ -1176,6 +1267,8 @@ components:
         links:
           type: object
           properties:
+            collaboratorUrl:
+              type: string
             editorUrl:
               type: string
             publicUrl:
@@ -1183,6 +1276,7 @@ components:
             pdfUrl:
               type: string
           required:
+            - collaboratorUrl
             - editorUrl
             - publicUrl
             - pdfUrl
