@@ -1257,6 +1257,7 @@ components:
             - accepting
             - accepted
             - disabled
+            - declined
         tags:
           type: array
           items:

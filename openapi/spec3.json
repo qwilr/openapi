@@ -1510,7 +1510,8 @@
               "live",
               "accepting",
               "accepted",
-              "disabled"
+              "disabled",
+              "declined"
             ]
           },
           "tags": {
