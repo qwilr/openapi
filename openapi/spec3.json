@@ -82,6 +82,10 @@
                     "items": {
                       "type": "string"
                     }
+                  },
+                  "ownerId": {
+                    "description": "Id of the user that you want the created page belongs to. You don't need to set this field if you want the owner of the access key be the owner of the page.",
+                    "$ref": "#/components/schemas/ObjectId"
                   }
                 },
                 "oneOf": [
@@ -1552,6 +1556,9 @@
           },
           "previewAcceptance": {
             "$ref": "#/components/schemas/Acceptance"
+          },
+          "ownerId": {
+            "$ref": "#/components/schemas/ObjectId"
           }
         },
         "required": [
@@ -1559,7 +1566,8 @@
           "name",
           "status",
           "tags",
-          "links"
+          "links",
+          "ownerId"
         ],
         "additionalProperties": false
       },

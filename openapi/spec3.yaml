@@ -103,6 +103,12 @@ paths:
                     case-sensitive.
                   items:
                     type: string
+                ownerId:
+                  description: >-
+                    Id of the user that you want the created page belongs to.
+                    You don't need to set this field if you want the owner of
+                    the access key be the owner of the page.
+                  $ref: '#/components/schemas/ObjectId'
               oneOf:
                 - title: Saved Blocks
                   properties:
@@ -1285,12 +1291,15 @@ components:
           $ref: '#/components/schemas/Acceptance'
         previewAcceptance:
           $ref: '#/components/schemas/Acceptance'
+        ownerId:
+          $ref: '#/components/schemas/ObjectId'
       required:
         - id
         - name
         - status
         - tags
         - links
+        - ownerId
       additionalProperties: false
     Error:
       description: Response error
