@@ -1399,8 +1399,6 @@ components:
         - id
         - email
         - createdAt
-        - firstName
-        - lastName
         - roles
         - teams
       additionalProperties: false

@@ -1718,8 +1718,6 @@
           "id",
           "email",
           "createdAt",
-          "firstName",
-          "lastName",
           "roles",
           "teams"
         ],
