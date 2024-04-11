@@ -4,7 +4,7 @@ info:
   title: API Reference
   termsOfService: 'https://qwilr.com/terms/'
   contact:
-    email: api@qwilr.com
+    email: help@qwilr.com
     url: 'http://qwilr.com'
   license:
     name: Qwilr License
@@ -21,15 +21,13 @@ info:
 
     generate custom quotes, create pages when someone fills out a form,
 
-    or anything else. The sky is the limit.
+    or anything else.
 
 
     Our API is organized around
     [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer).
 
-    All calls made are live. If you need to test outside of your live account,
-
-    get in touch with our team for options around that.
+    All calls made are to your live account.
 
 
     If you're looking for help with the Qwilr app you can find that in our
@@ -54,14 +52,17 @@ tags:
       Block objects correspond to blocks in the Qwilr UI. Pages and templates
       are
 
-      composed of a series of blocks. The Qwilr API allows you to get saved
-      blocks
+      composed of a series of blocks. The Qwilr API allows you to get the list
+      of
 
-      from your account.
+      saved blocks from your account.
   - name: Subscriptions
     description: >
       Webhooks allow you to subscribe and unsubscribe from events on your Qwilr
       account.
+  - name: Account
+    description: |
+      Miscellaneous operations concerning your Qwilr account.
 servers:
   - url: 'https://api.qwilr.com/v1'
     description: Production server (uses live data)
@@ -83,7 +84,7 @@ paths:
               properties:
                 name:
                   type: string
-                  description: 'Title of the page, visible as the browser title.'
+                  description: 'Title of the page, visible as the browser page title.'
                 published:
                   type: boolean
                   default: false
@@ -98,16 +99,13 @@ paths:
                   $ref: '#/components/schemas/Metadata'
                 tags:
                   type: array
-                  description: >-
-                    These tags to be applied to your page. Tags are
-                    case-sensitive.
+                  description: The tags for your page. Tags are case-sensitive.
                   items:
                     type: string
                 ownerId:
                   description: >-
-                    Id of the user that you want the created page belongs to.
-                    You don't need to set this field if you want the owner of
-                    the access key be the owner of the page.
+                    ID of the user that should own the page. If not specified,
+                    the owner of the access token will be the owner of the page.
                   $ref: '#/components/schemas/ObjectId'
               oneOf:
                 - title: Saved Blocks
@@ -197,35 +195,6 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
-  /blocks/saved:
-    get:
-      summary: Get saved blocks
-      description: >-
-        Allows you to retrieve a list of saved blocks from your account, with
-        block names. Useful in developer workflow for mapping block names to
-        saved block IDs.
-      tags:
-        - Blocks
-      operationId: getSavedBlocks
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SavedBlock'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
   '/pages/{pageId}':
     get:
       summary: Get a page
@@ -297,6 +266,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Page'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /blocks/saved:
+    get:
+      summary: Get saved blocks
+      description: >-
+        Retrieve a list of saved blocks from your account, with block names.
+        Useful in developer workflow for mapping block names to saved block IDs.
+      tags:
+        - Blocks
+      operationId: getSavedBlocks
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SavedBlock'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -576,6 +573,34 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+  /users:
+    get:
+      summary: Get users
+      description: >-
+        Retrieve the list of users from your account, with roles and team names.
+        Useful for specifying the `ownerId` when creating a page.
+      tags:
+        - Account
+      operationId: getUsers
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 components:
   securitySchemes:
     bearerAuth:
@@ -583,20 +608,20 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: >
-        All requests to API need to be authenticated with your account's access
+        All API requests need to be authenticated with your account's access
         token. You can find
 
         your access token in the [Qwilr API
-        Settings](https://app.qwilr.com/#/settings/api):
+        Settings](https://app.qwilr.com/#/settings/api).
 
 
-        Your access token allows anyone to access your Qwilr Pages and account.
+        Your access token allows anyone to access your Qwilr pages and account.
         Be sure to keep it
 
-        secret! Do not share your secret access tokens in any public spaces such
-        as your source
+        secret! Do not share your access tokens in any public spaces such as
+        your source repository
 
-        repository, client-side code, and so forth.
+        client-side code, and so forth.
 
 
         **When making a request:**
@@ -1337,6 +1362,48 @@ components:
           $ref: '#/components/schemas/EventType'
         url:
           type: string
+    User:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectId'
+        email:
+          type: string
+          example: trustful.than@qwilr.com
+        createdAt:
+          type: string
+          example: '2021-07-22T06:09:09.816Z'
+        firstName:
+          type: string
+          example: Trustful
+        lastName:
+          type: string
+          example: Than
+        roles:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: admin
+        teams:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: Heroes
+      required:
+        - id
+        - email
+        - createdAt
+        - firstName
+        - lastName
+        - roles
+        - teams
+      additionalProperties: false
   responses:
     BadRequest:
       description: Request has malformed data or invalid

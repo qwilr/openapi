@@ -5,7 +5,7 @@
     "title": "API Reference",
     "termsOfService": "https://qwilr.com/terms/",
     "contact": {
-      "email": "api@qwilr.com",
+      "email": "help@qwilr.com",
       "url": "http://qwilr.com"
     },
     "license": {
@@ -15,7 +15,7 @@
     "x-logo": {
       "url": "https://qwilr.com/wp-content/uploads/2019/10/qwilr-logo-dark.png"
     },
-    "description": "## Introduction\n\nWelcome to the Qwilr Public API documentation. With our API you'll be\nable to generate Qwilr Pages programmatically. This means you can\ngenerate custom quotes, create pages when someone fills out a form,\nor anything else. The sky is the limit.\n\nOur API is organized around [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer).\nAll calls made are live. If you need to test outside of your live account,\nget in touch with our team for options around that.\n\nIf you're looking for help with the Qwilr app you can find that in our\n[help documentation](https://help.qwilr.com/).\n\nIf you have any questions about our API, please get in touch at\n[help@qwilr.com](mailto:help@qwilr.com).\n"
+    "description": "## Introduction\n\nWelcome to the Qwilr Public API documentation. With our API you'll be\nable to generate Qwilr Pages programmatically. This means you can\ngenerate custom quotes, create pages when someone fills out a form,\nor anything else.\n\nOur API is organized around [REST](http://en.wikipedia.org/wiki/Representational_State_Transfer).\nAll calls made are to your live account.\n\nIf you're looking for help with the Qwilr app you can find that in our\n[help documentation](https://help.qwilr.com/).\n\nIf you have any questions about our API, please get in touch at\n[help@qwilr.com](mailto:help@qwilr.com).\n"
   },
   "externalDocs": {
     "description": "Sign up for Qwilr",
@@ -28,11 +28,15 @@
     },
     {
       "name": "Blocks",
-      "description": "Block objects correspond to blocks in the Qwilr UI. Pages and templates are\ncomposed of a series of blocks. The Qwilr API allows you to get saved blocks\nfrom your account.\n"
+      "description": "Block objects correspond to blocks in the Qwilr UI. Pages and templates are\ncomposed of a series of blocks. The Qwilr API allows you to get the list of\nsaved blocks from your account.\n"
     },
     {
       "name": "Subscriptions",
       "description": "Webhooks allow you to subscribe and unsubscribe from events on your Qwilr account.\n"
+    },
+    {
+      "name": "Account",
+      "description": "Miscellaneous operations concerning your Qwilr account.\n"
     }
   ],
   "servers": [
@@ -63,7 +67,7 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "description": "Title of the page, visible as the browser title."
+                    "description": "Title of the page, visible as the browser page title."
                   },
                   "published": {
                     "type": "boolean",
@@ -78,13 +82,13 @@
                   },
                   "tags": {
                     "type": "array",
-                    "description": "These tags to be applied to your page. Tags are case-sensitive.",
+                    "description": "The tags for your page. Tags are case-sensitive.",
                     "items": {
                       "type": "string"
                     }
                   },
                   "ownerId": {
-                    "description": "Id of the user that you want the created page belongs to. You don't need to set this field if you want the owner of the access key be the owner of the page.",
+                    "description": "ID of the user that should own the page. If not specified, the owner of the access token will be the owner of the page.",
                     "$ref": "#/components/schemas/ObjectId"
                   }
                 },
@@ -182,46 +186,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Page"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "422": {
-            "$ref": "#/components/responses/UnprocessableEntity"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        }
-      }
-    },
-    "/blocks/saved": {
-      "get": {
-        "summary": "Get saved blocks",
-        "description": "Allows you to retrieve a list of saved blocks from your account, with block names. Useful in developer workflow for mapping block names to saved block IDs.",
-        "tags": [
-          "Blocks"
-        ],
-        "operationId": "getSavedBlocks",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SavedBlock"
-                  }
                 }
               }
             }
@@ -347,6 +311,46 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Page"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/blocks/saved": {
+      "get": {
+        "summary": "Get saved blocks",
+        "description": "Retrieve a list of saved blocks from your account, with block names. Useful in developer workflow for mapping block names to saved block IDs.",
+        "tags": [
+          "Blocks"
+        ],
+        "operationId": "getSavedBlocks",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SavedBlock"
+                  }
                 }
               }
             }
@@ -726,6 +730,46 @@
           }
         }
       }
+    },
+    "/users": {
+      "get": {
+        "summary": "Get users",
+        "description": "Retrieve the list of users from your account, with roles and team names. Useful for specifying the `ownerId` when creating a page.",
+        "tags": [
+          "Account"
+        ],
+        "operationId": "getUsers",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -734,7 +778,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "All requests to API need to be authenticated with your account's access token. You can find\nyour access token in the [Qwilr API Settings](https://app.qwilr.com/#/settings/api):\n\nYour access token allows anyone to access your Qwilr Pages and account. Be sure to keep it\nsecret! Do not share your secret access tokens in any public spaces such as your source\nrepository, client-side code, and so forth.\n\n**When making a request:**\n\n- Use your access token with bearer authentication in the headers.\nFor example: `Authorization: Bearer fakeaccesstoken`\n- Send all requests over [HTTPS](https://en.wikipedia.org/wiki/HTTPS)\n"
+        "description": "All API requests need to be authenticated with your account's access token. You can find\nyour access token in the [Qwilr API Settings](https://app.qwilr.com/#/settings/api).\n\nYour access token allows anyone to access your Qwilr pages and account. Be sure to keep it\nsecret! Do not share your access tokens in any public spaces such as your source repository\nclient-side code, and so forth.\n\n**When making a request:**\n\n- Use your access token with bearer authentication in the headers.\nFor example: `Authorization: Bearer fakeaccesstoken`\n- Send all requests over [HTTPS](https://en.wikipedia.org/wiki/HTTPS)\n"
       }
     },
     "schemas": {
@@ -1622,6 +1666,64 @@
             "type": "string"
           }
         }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/ObjectId"
+          },
+          "email": {
+            "type": "string",
+            "example": "trustful.than@qwilr.com"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2021-07-22T06:09:09.816Z"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Trustful"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Than"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "admin"
+                }
+              }
+            }
+          },
+          "teams": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Heroes"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "createdAt",
+          "firstName",
+          "lastName",
+          "roles",
+          "teams"
+        ],
+        "additionalProperties": false
       }
     },
     "responses": {
