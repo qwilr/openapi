@@ -2,15 +2,15 @@ openapi: 3.0.2
 info:
   version: 1.0.0
   title: API Reference
-  termsOfService: 'https://qwilr.com/terms/'
+  termsOfService: https://qwilr.com/terms/
   contact:
     email: help@qwilr.com
-    url: 'http://qwilr.com'
+    url: http://qwilr.com
   license:
     name: Qwilr License
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
   x-logo:
-    url: 'https://qwilr.com/wp-content/uploads/2019/10/qwilr-logo-dark.png'
+    url: https://qwilr.com/wp-content/uploads/2019/10/qwilr-logo-dark.png
   description: >
     ## Introduction
 
@@ -40,7 +40,7 @@ info:
     [help@qwilr.com](mailto:help@qwilr.com).
 externalDocs:
   description: Sign up for Qwilr
-  url: 'https://qwilr.com/signup/'
+  url: https://qwilr.com/signup/
 tags:
   - name: Pages
     description: |
@@ -64,7 +64,7 @@ tags:
     description: |
       Miscellaneous operations concerning your Qwilr account.
 servers:
-  - url: 'https://api.qwilr.com/v1'
+  - url: https://api.qwilr.com/v1
     description: Production server (uses live data)
 security:
   - bearerAuth: []
@@ -84,7 +84,7 @@ paths:
               properties:
                 name:
                   type: string
-                  description: 'Title of the page, visible as the browser page title.'
+                  description: Title of the page, visible as the browser page title.
                 published:
                   type: boolean
                   default: false
@@ -191,11 +191,13 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
-  '/pages/{pageId}':
+  /pages/{pageId}:
     get:
       summary: Get a page
       description: Returns a page
@@ -234,6 +236,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -272,6 +276,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -300,6 +306,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -328,6 +336,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -468,7 +478,7 @@ paths:
                             - id
                         viewedUrl:
                           type: string
-                          example: 'https://pages.qwilr.com/My-Qwilr-Page-UeOsR7ATyqBo'
+                          example: https://pages.qwilr.com/My-Qwilr-Page-UeOsR7ATyqBo
                       required:
                         - event
                         - page
@@ -515,7 +525,7 @@ paths:
                             - id
                         viewedUrl:
                           type: string
-                          example: 'https://pages.qwilr.com/My-Qwilr-Page-UeOsR7ATyqBo'
+                          example: https://pages.qwilr.com/My-Qwilr-Page-UeOsR7ATyqBo
                       required:
                         - event
                         - page
@@ -540,11 +550,13 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
-  '/webhooks/{subscriptionId}':
+  /webhooks/{subscriptionId}:
     delete:
       summary: Cancel a webhook event subscription
       description: >-
@@ -569,6 +581,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -597,6 +611,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -635,7 +651,7 @@ components:
   schemas:
     SavedBlockId:
       type: string
-      pattern: '^[a-zA-Z0-9_-]{30}$'
+      pattern: ^[a-zA-Z0-9_-]{30}$
       title: SavedBlockId
       example: uCHq6B6_S1EqZ2pyam8YVfUldvoF-Q
     SplashSettings:
@@ -666,7 +682,7 @@ components:
             - videoUrl
           additionalProperties: false
       example:
-        imageUrl: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6'
+        imageUrl: https://images.unsplash.com/photo-1530281700549-e82e7bf110d6
     PostAcceptance:
       type: object
       description: >-
@@ -730,6 +746,7 @@ components:
         - AZN
         - BHD
         - BDT
+        - BSD
         - BYR
         - BZD
         - BOB
@@ -890,13 +907,13 @@ components:
       maxLength: 30000
     FeaturesList:
       type: array
-      description: 'For plan cards, the features that will be listed below the plan card.'
+      description: For plan cards, the features that will be listed below the plan card.
       items:
         type: string
       maxItems: 100
     Metadata:
       type: object
-      description: 'Data you provide, that will be returned as part of all Webhooks.'
+      description: Data you provide, that will be returned as part of all Webhooks.
       maxProperties: 500
       additionalProperties:
         maxLength: 500
@@ -904,7 +921,7 @@ components:
     FixedCostLineItem:
       title: Fixed cost line item
       type: object
-      description: 'A fixed cost line item, with a description and pricing information'
+      description: A fixed cost line item, with a description and pricing information
       properties:
         type:
           type: string
@@ -983,7 +1000,7 @@ components:
     TextLineItem:
       title: Text line item
       type: object
-      description: 'A text line item, with a description'
+      description: A text line item, with a description
       properties:
         type:
           type: string
@@ -1114,7 +1131,7 @@ components:
           - $ref: '#/components/schemas/RepeatingTokenSubstitutions'
     ObjectId:
       type: string
-      pattern: '^[a-z0-9]{24}$'
+      pattern: ^[a-z0-9]{24}$
       title: Id
       example: 6ee0f841f3cc8900090d82dc
     AcceptTemplateSettings:
@@ -1329,12 +1346,17 @@ components:
     Error:
       description: Response error
       properties:
-        code:
+        statusCode:
           type: number
+        timestamp:
+          type: string
+        type:
+          type: string
         message:
           type: string
       required:
-        - code
+        - statusCode
+        - timestamp
         - message
     SavedBlock:
       type: object
@@ -1417,6 +1439,12 @@ components:
             $ref: '#/components/schemas/Error'
     Forbidden:
       description: No permission to access a resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
       content:
         application/json:
           schema:
