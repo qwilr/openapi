@@ -199,9 +199,6 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
           "422": {
             "$ref": "#/components/responses/UnprocessableEntity"
           },
@@ -267,9 +264,6 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
           "422": {
             "$ref": "#/components/responses/UnprocessableEntity"
           },
@@ -330,9 +324,6 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
           "422": {
             "$ref": "#/components/responses/UnprocessableEntity"
           },
@@ -373,9 +364,6 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
           "422": {
             "$ref": "#/components/responses/UnprocessableEntity"
           },
@@ -415,9 +403,6 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
           },
           "422": {
             "$ref": "#/components/responses/UnprocessableEntity"
@@ -696,9 +681,6 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
           "422": {
             "$ref": "#/components/responses/UnprocessableEntity"
           },
@@ -740,9 +722,6 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
           "422": {
             "$ref": "#/components/responses/UnprocessableEntity"
           },
@@ -782,9 +761,6 @@
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
           },
           "422": {
             "$ref": "#/components/responses/UnprocessableEntity"
@@ -1643,22 +1619,15 @@
       "Error": {
         "description": "Response error",
         "properties": {
-          "statusCode": {
+          "code": {
             "type": "number"
-          },
-          "timestamp": {
-            "type": "string"
-          },
-          "type": {
-            "type": "string"
           },
           "message": {
             "type": "string"
           }
         },
         "required": [
-          "statusCode",
-          "timestamp",
+          "code",
           "message"
         ]
       },
@@ -1779,16 +1748,6 @@
       },
       "Forbidden": {
         "description": "No permission to access a resource",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            }
-          }
-        }
-      },
-      "NotFound": {
-        "description": "Resource not found",
         "content": {
           "application/json": {
             "schema": {
