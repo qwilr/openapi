@@ -1516,6 +1516,21 @@
                               "quantity",
                               "selected"
                             ]
+                          },
+                          {
+                            "title": "Variable line item",
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "variable"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "type"
+                            ]
                           }
                         ]
                       }
