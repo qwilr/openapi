@@ -1455,6 +1455,10 @@
             "type": "string",
             "description": "URL for the audit trail PDF download. Please note that it might take a few minutes for the PDF to be available after the Qwilr page is accepted."
           },
+          "agreementAuditTrailPdf": {
+            "type": "string",
+            "description": "URL for the agreement audit trail PDF download. Please note that it might take a few minutes for the PDF to be available after the Qwilr page is accepted."
+          },
           "quote": {
             "type": "object",
             "nullable": true,
@@ -1626,6 +1630,9 @@
               },
               "pdfUrl": {
                 "type": "string"
+              },
+              "agreementUrl": {
+                "type": "string"
               }
             },
             "required": [
@@ -1686,6 +1693,9 @@
           "name": {
             "type": "string",
             "example": "Saved block name"
+          },
+          "type": {
+            "type": "string"
           }
         },
         "additionalProperties": false
