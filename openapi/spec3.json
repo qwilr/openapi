@@ -1631,7 +1631,7 @@
               "pdfUrl": {
                 "type": "string"
               },
-              "agreementUrl": {
+              "agreementPdfUrl": {
                 "type": "string"
               }
             },

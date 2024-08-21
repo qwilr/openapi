@@ -1339,7 +1339,7 @@ components:
               type: string
             pdfUrl:
               type: string
-            agreementUrl:
+            agreementPdfUrl:
               type: string
           required:
             - collaboratorUrl
