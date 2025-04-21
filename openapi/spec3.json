@@ -476,7 +476,59 @@
                           },
                           "idempotencyKey": {
                             "type": "string",
-                            "example": "6ee0f841f3cc8900090d82dc"
+                            "example": "b1c51b5b4844a81f7c3745002dbbd871fdda6cabe019961bcc79f972d924a2b0"
+                          },
+                          "page": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "$ref": "#/components/schemas/ObjectId"
+                              },
+                              "metadata": {
+                                "$ref": "#/components/schemas/Metadata"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "event",
+                          "page"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "Return this if your server accepts the callback. This acknowledgement should be made before the timeout of 30s. If the timeout occurs, the callback will be retried, up to 5 times."
+                  }
+                }
+              }
+            }
+          },
+          "pagePartiallyAccepted": {
+            "{$request.body#/targetUrl}": {
+              "post": {
+                "summary": "pagePartiallyAccepted",
+                "requestBody": {
+                  "description": "Webhook callback that fires when a page is partially accepted. Your page has been accepted by one or more accepters but not all accepters.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "event": {
+                            "type": "string",
+                            "enum": [
+                              "pagePartiallyAccepted"
+                            ]
+                          },
+                          "idempotencyKey": {
+                            "type": "string",
+                            "example": "b1c51b5b4844a81f7c3745002dbbd871fdda6cabe019961bcc79f972d924a2b0"
                           },
                           "page": {
                             "type": "object",
@@ -528,7 +580,7 @@
                           },
                           "idempotencyKey": {
                             "type": "string",
-                            "example": "61386c853b700e0006d54901"
+                            "example": "b1c51b5b4844a81f7c3745002dbbd871fdda6cabe019961bcc79f972d924a2b0"
                           },
                           "page": {
                             "type": "object",
@@ -580,7 +632,7 @@
                           },
                           "idempotencyKey": {
                             "type": "string",
-                            "example": "6ee0f841f3cc8900090d82dcqgco0OBdTtu3"
+                            "example": "b1c51b5b4844a81f7c3745002dbbd871fdda6cabe019961bcc79f972d924a2b0"
                           },
                           "page": {
                             "type": "object",
@@ -637,7 +689,7 @@
                           },
                           "idempotencyKey": {
                             "type": "string",
-                            "example": "6ee0f841f3cc8900090d82dcqgco0OBdTtu3"
+                            "example": "b1c51b5b4844a81f7c3745002dbbd871fdda6cabe019961bcc79f972d924a2b0"
                           },
                           "page": {
                             "type": "object",
@@ -662,6 +714,110 @@
                           "event",
                           "page",
                           "viewedUrl"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "Return this if your server accepts the callback. This acknowledgement should be made before the timeout of 30s. If the timeout occurs, the callback will be retried, up to 5 times."
+                  }
+                }
+              }
+            }
+          },
+          "pageSetLive": {
+            "{$request.body#/targetUrl}": {
+              "post": {
+                "summary": "pageSetLive",
+                "requestBody": {
+                  "description": "Webhook callback that fires when a page is set to live from draft.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "event": {
+                            "type": "string",
+                            "enum": [
+                              "pageSetLive"
+                            ]
+                          },
+                          "idempotencyKey": {
+                            "type": "string",
+                            "example": "b1c51b5b4844a81f7c3745002dbbd871fdda6cabe019961bcc79f972d924a2b0"
+                          },
+                          "page": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "$ref": "#/components/schemas/ObjectId"
+                              },
+                              "metadata": {
+                                "$ref": "#/components/schemas/Metadata"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "event",
+                          "page"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": {
+                    "description": "Return this if your server accepts the callback. This acknowledgement should be made before the timeout of 30s. If the timeout occurs, the callback will be retried, up to 5 times."
+                  }
+                }
+              }
+            }
+          },
+          "pageRevivedLive": {
+            "{$request.body#/targetUrl}": {
+              "post": {
+                "summary": "pageRevivedLive",
+                "requestBody": {
+                  "description": "Webhook callback that fires when a page is set to live from declined.",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "event": {
+                            "type": "string",
+                            "enum": [
+                              "pageRevivedLive"
+                            ]
+                          },
+                          "idempotencyKey": {
+                            "type": "string",
+                            "example": "b1c51b5b4844a81f7c3745002dbbd871fdda6cabe019961bcc79f972d924a2b0"
+                          },
+                          "page": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "$ref": "#/components/schemas/ObjectId"
+                              },
+                              "metadata": {
+                                "$ref": "#/components/schemas/Metadata"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "event",
+                          "page"
                         ]
                       }
                     }
@@ -1705,9 +1861,12 @@
         "type": "string",
         "enum": [
           "pageAccepted",
+          "pagePartiallyAccepted",
           "pagePreviewAccepted",
           "pageViewed",
-          "pageFirstViewed"
+          "pageFirstViewed",
+          "pageSetLive",
+          "pageRevivedLive"
         ],
         "example": "pageAccepted"
       },
