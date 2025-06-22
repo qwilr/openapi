@@ -782,9 +782,10 @@ components:
     SplashSettings:
       type: object
       description: >-
-        Configures settings for the splash block. Only relevant if you want to
-        customise your splash block. Including this field when the block is not
-        an Splash block is invalid and will result in an error.
+        Configures background media settings for Text and Splash blocks. Only
+        relevant if you want to customise Text and Splash blocks. Including this
+        field when the block is not a Splash or Text block is invalid and will
+        result in an error.
       oneOf:
         - title: Background image
           properties:
