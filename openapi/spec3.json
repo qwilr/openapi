@@ -1316,9 +1316,13 @@
             "enum": [
               "one-off",
               "weekly",
+              "fortnightly",
               "monthly",
               "quarterly",
-              "yearly"
+              "halfYearly",
+              "yearly",
+              "twoYearly",
+              "threeYearly"
             ]
           },
           "recommended": {
@@ -1682,9 +1686,13 @@
                                 "enum": [
                                   "one-off",
                                   "weekly",
+                                  "fortnightly",
                                   "monthly",
                                   "quarterly",
-                                  "yearly"
+                                  "halfYearly",
+                                  "yearly",
+                                  "twoYearly",
+                                  "threeYearly"
                                 ]
                               },
                               "selected": {

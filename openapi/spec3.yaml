@@ -1104,9 +1104,13 @@ components:
           enum:
             - one-off
             - weekly
+            - fortnightly
             - monthly
             - quarterly
+            - halfYearly
             - yearly
+            - twoYearly
+            - threeYearly
         recommended:
           type: boolean
           description: >-
@@ -1397,9 +1401,13 @@ components:
                               enum:
                                 - one-off
                                 - weekly
+                                - fortnightly
                                 - monthly
                                 - quarterly
+                                - halfYearly
                                 - yearly
+                                - twoYearly
+                                - threeYearly
                             selected:
                               type: boolean
                             metadata:
