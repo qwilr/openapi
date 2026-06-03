@@ -1232,15 +1232,15 @@ components:
           description: Customer's metadata sent along with the request
           $ref: '#/components/schemas/Metadata'
       additionalProperties: false
-    TextTokenSubstitutions:
-      title: Text Token Substitutions
+    TextVariableSubstitutions:
+      title: Text Variable Substitutions
       type: string
-      description: A text substitution. Replaces the token with a plain text value.
-    RepeatingTokenSubstitutions:
-      title: Repeating Token Substitutions
+      description: A text substitution. Replaces the variable with a plain text value.
+    RepeatingVariableSubstitutions:
+      title: Repeating Variable Substitutions
       type: array
       description: >-
-        A repeating token substitution. Content is repeated for each entry in
+        A repeating variable substitution. Content is repeated for each entry in
         the array.
       items:
         type: object
@@ -1249,17 +1249,17 @@ components:
     BlockSubstitutions:
       type: object
       description: >-
-        Mapping of token API reference keys to substitution values used inside a
-        block.
+        Mapping of variable API reference keys to substitution values used
+        inside a block.
       example:
-        block_token_key: Example value
-        repeating_token_key:
+        block_variable_key: Example value
+        repeating_variable_key:
           - item_property: value1
           - item_property: value2
       additionalProperties:
         oneOf:
-          - $ref: '#/components/schemas/TextTokenSubstitutions'
-          - $ref: '#/components/schemas/RepeatingTokenSubstitutions'
+          - $ref: '#/components/schemas/TextVariableSubstitutions'
+          - $ref: '#/components/schemas/RepeatingVariableSubstitutions'
     ObjectId:
       type: string
       pattern: ^[a-z0-9]{24}$
@@ -1277,18 +1277,18 @@ components:
     PageSubstitutions:
       type: object
       description: >-
-        Mapping of token API reference keys to substitution values used
+        Mapping of variable API reference keys to substitution values used
         throughout the page. The values can be overwritten if the same keys are
         defined in the block-level substitutions.
       example:
-        page_token_key: Example value
-        repeating_token_key:
+        page_variable_key: Example value
+        repeating_variable_key:
           - item_property: value1
           - item_property: value2
       additionalProperties:
         oneOf:
-          - $ref: '#/components/schemas/TextTokenSubstitutions'
-          - $ref: '#/components/schemas/RepeatingTokenSubstitutions'
+          - $ref: '#/components/schemas/TextVariableSubstitutions'
+          - $ref: '#/components/schemas/RepeatingVariableSubstitutions'
     Acceptance:
       type: object
       nullable: true
