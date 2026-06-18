@@ -37,6 +37,10 @@
     {
       "name": "Account",
       "description": "Miscellaneous operations concerning your Qwilr account.\n"
+    },
+    {
+      "name": "Taxes",
+      "description": "Tax objects correspond to the quote tax definitions configured on your\nQwilr account. The Qwilr API allows you to create, retrieve, update and\ndelete these, so you can manage them and reference their IDs when building\nquotes.\n"
     }
   ],
   "servers": [
@@ -363,6 +367,196 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/taxes": {
+      "get": {
+        "summary": "Get taxes",
+        "description": "Retrieve the quote tax definitions configured on your account, including each tax's ID, name, and rate.",
+        "tags": [
+          "Taxes"
+        ],
+        "operationId": "getTaxes",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tax"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a tax",
+        "description": "Creates a new quote tax definition on your account. By default the tax's `id` is generated for you and returned in the response. Alternatively, supply your own `id` (for example, one from an external system) — it must be unique within your account and follow the format described on the request body. The `id` is set at creation time only and cannot be changed later; to use a different id, delete the tax and create a new one. Either way, store the returned `id` so you can reference the tax elsewhere in the API.",
+        "tags": [
+          "Taxes"
+        ],
+        "operationId": "createTax",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaxRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The tax has been created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tax"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/taxes/{taxId}": {
+      "patch": {
+        "summary": "Update a tax",
+        "description": "Updates an existing quote tax definition. Only the fields you supply are changed; at least one of `name` or `rate` must be provided. A tax's `id` cannot be changed — to use a different id, delete the tax and create a new one.",
+        "tags": [
+          "Taxes"
+        ],
+        "operationId": "updateTax",
+        "parameters": [
+          {
+            "name": "taxId",
+            "description": "The id of the tax to update.",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaxRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The tax has been updated"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a tax",
+        "description": "Deletes an existing quote tax definition from your account.",
+        "tags": [
+          "Taxes"
+        ],
+        "operationId": "deleteTax",
+        "parameters": [
+          {
+            "name": "taxId",
+            "description": "The id of the tax to delete.",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The tax has been deleted"
           },
           "400": {
             "$ref": "#/components/responses/BadRequest"
@@ -1865,6 +2059,79 @@
         },
         "additionalProperties": false
       },
+      "Tax": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the tax. Use this when referencing the tax elsewhere in the API.",
+            "example": "gst"
+          },
+          "name": {
+            "type": "string",
+            "description": "The display name of the tax.",
+            "example": "GST"
+          },
+          "rate": {
+            "type": "number",
+            "nullable": true,
+            "description": "The tax rate, as a percentage. May be `null` when no rate has been set.",
+            "example": 10
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "rate"
+        ],
+        "additionalProperties": false
+      },
+      "CreateTaxRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "An optional identifier for the tax. Supply your own `id` (for example, one from an external system) to reference the tax by a value you control; if omitted, Qwilr generates one for you. Must be unique within your account, and 1–64 characters of letters, digits, `-` or `_`, starting with a letter or digit. The `id` is set at creation time only and cannot be changed afterwards — to use a different id, delete the tax and create a new one.",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$",
+            "example": "gst"
+          },
+          "name": {
+            "type": "string",
+            "description": "The display name of the tax.",
+            "example": "GST"
+          },
+          "rate": {
+            "type": "number",
+            "nullable": true,
+            "description": "The tax rate, as a percentage. Pass `null` to create a tax with no rate set.",
+            "example": 10
+          }
+        },
+        "required": [
+          "name",
+          "rate"
+        ],
+        "additionalProperties": false
+      },
+      "UpdateTaxRequest": {
+        "type": "object",
+        "description": "Updates an existing tax. Only the fields you supply are changed; at least one of `name` or `rate` must be provided.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The display name of the tax.",
+            "example": "GST"
+          },
+          "rate": {
+            "type": "number",
+            "nullable": true,
+            "description": "The tax rate, as a percentage. Pass `null` to clear the rate.",
+            "example": 10
+          }
+        },
+        "minProperties": 1,
+        "additionalProperties": false
+      },
       "EventType": {
         "type": "string",
         "enum": [
@@ -2002,6 +2269,16 @@
       },
       "TooManyRequests": {
         "description": "Too many requests",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Resource conflicts with an existing resource",
         "content": {
           "application/json": {
             "schema": {
