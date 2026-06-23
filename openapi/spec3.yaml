@@ -113,6 +113,8 @@ paths:
                     ID of the user that should own the page. If not specified,
                     the owner of the access token will be the owner of the page.
                   $ref: '#/components/schemas/ObjectId'
+                expiry:
+                  $ref: '#/components/schemas/Expiry'
               oneOf:
                 - title: Saved Blocks
                   properties:
@@ -250,7 +252,9 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
     put:
       summary: Update page
-      description: Allows you to update the `published` property.
+      description: >-
+        Allows you to update the `published` property and the page's auto-link
+        `expiry` settings.
       tags:
         - Pages
       operationId: updatePage
@@ -268,6 +272,8 @@ paths:
               properties:
                 published:
                   type: boolean
+                expiry:
+                  $ref: '#/components/schemas/Expiry'
               additionalProperties: false
       responses:
         '200':
@@ -1433,6 +1439,40 @@ components:
         oneOf:
           - $ref: '#/components/schemas/TextVariableSubstitutions'
           - $ref: '#/components/schemas/RepeatingVariableSubstitutions'
+    Expiry:
+      type: object
+      description: >-
+        Page auto-link [expiry
+        settings](https://help.qwilr.com/article/579-set-a-page-to-expire). When
+        enabled, the page's public link automatically expires and the page is
+        declined after the configured number of days. The expiry clock starts
+        when the page is published, so a draft page just stores the setting
+        until it goes live.
+      properties:
+        enabled:
+          type: boolean
+          default: false
+          description: >-
+            Whether auto-link expiry is enabled for the page. Default is
+            `false`.
+        expireAfterDays:
+          type: integer
+          minimum: 1
+          maximum: 365
+          description: >-
+            Number of days after the page is published before its link expires.
+            Required when `enabled` is `true`. Must be an integer between 1 and
+            365.
+      required:
+        - enabled
+      additionalProperties: false
+      anyOf:
+        - properties:
+            enabled:
+              enum:
+                - false
+        - required:
+            - expireAfterDays
     Acceptance:
       type: object
       nullable: true
@@ -1631,6 +1671,23 @@ components:
           $ref: '#/components/schemas/Acceptance'
         ownerId:
           $ref: '#/components/schemas/ObjectId'
+        expiry:
+          type: object
+          description: >-
+            Auto-link expiry settings for the page. `enabled` is `false` when
+            the page has no active expiry. `expireAfterDays` and `expiresOn` are
+            only present once expiry is enabled; `expiresOn` (the computed
+            absolute expiry timestamp) is set only after the page is published.
+          properties:
+            enabled:
+              type: boolean
+            expireAfterDays:
+              type: integer
+            expiresOn:
+              type: string
+          required:
+            - enabled
+          additionalProperties: false
       required:
         - id
         - name
@@ -1638,6 +1695,7 @@ components:
         - tags
         - links
         - ownerId
+        - expiry
       additionalProperties: false
     Error:
       description: Response error
