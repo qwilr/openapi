@@ -1135,6 +1135,20 @@ components:
         - type
         - amount
       additionalProperties: false
+    TaxIds:
+      type: array
+      description: >-
+        The IDs of the account taxes to apply. Each ID must reference an
+        existing tax in your account (create and manage taxes with the [Taxes
+        endpoints](/docs/api/reference/taxes)); an unknown ID is rejected with a
+        `400`. This field uses replace semantics: omit it to keep whatever taxes
+        the saved block already had, send `[]` to remove all taxes, or list IDs
+        to apply exactly those taxes.
+      items:
+        type: string
+        pattern: ^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$
+      example:
+        - gst
     QuoteSettings:
       type: object
       description: >-
@@ -1178,6 +1192,11 @@ components:
         quoteDiscount:
           description: The discount to apply to the total quote price.
           $ref: '#/components/schemas/Discount'
+        taxIds:
+          description: >-
+            The taxes to apply across the whole quote. Ignore this field for non
+            Quote block types.
+          $ref: '#/components/schemas/TaxIds'
       additionalProperties: false
     Text:
       type: string
@@ -1378,6 +1397,7 @@ components:
               description: >-
                 Whether the plan cards are grouped by billing frequency. Default
                 is `false`.
+          additionalProperties: false
         metadata:
           description: Customer's metadata sent along with the request
           $ref: '#/components/schemas/Metadata'
