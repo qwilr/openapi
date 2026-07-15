@@ -253,8 +253,8 @@ paths:
     put:
       summary: Update page
       description: >-
-        Allows you to update the `published` property and the page's auto-link
-        `expiry` settings.
+        Allows you to update the `published` property, the page's auto-link
+        `expiry` settings, and its Qwilr Pay `paymentSettings`.
       tags:
         - Pages
       operationId: updatePage
@@ -274,6 +274,8 @@ paths:
                   type: boolean
                 expiry:
                   $ref: '#/components/schemas/Expiry'
+                paymentSettings:
+                  $ref: '#/components/schemas/PaymentSettingsUpdate'
               additionalProperties: false
       responses:
         '200':
@@ -1643,6 +1645,211 @@ components:
         - acceptersCount
         - accepters
       additionalProperties: false
+    RecurringSettings:
+      type: object
+      description: >-
+        A single recurring (subscription) schedule — anchor/start/end dates,
+        free trial and proration.
+      properties:
+        anchorDate:
+          description: When the subscription's billing cycle is anchored.
+          oneOf:
+            - type: object
+              properties:
+                kind:
+                  type: string
+                  enum:
+                    - anchor_preset
+                value:
+                  type: string
+                  enum:
+                    - acceptance
+              required:
+                - kind
+                - value
+              additionalProperties: false
+            - type: object
+              properties:
+                kind:
+                  type: string
+                  enum:
+                    - value
+                value:
+                  type: string
+                  format: date-time
+              required:
+                - kind
+                - value
+              additionalProperties: false
+        startDate:
+          description: When the subscription starts.
+          oneOf:
+            - type: object
+              properties:
+                kind:
+                  type: string
+                  enum:
+                    - start_preset
+                value:
+                  type: string
+                  enum:
+                    - acceptance
+              required:
+                - kind
+                - value
+              additionalProperties: false
+            - type: object
+              properties:
+                kind:
+                  type: string
+                  enum:
+                    - value
+                value:
+                  type: string
+                  format: date-time
+              required:
+                - kind
+                - value
+              additionalProperties: false
+        endDate:
+          description: >-
+            When the subscription ends — a fixed number of billing cycles
+            (`null` = never) or an explicit date.
+          oneOf:
+            - type: object
+              properties:
+                kind:
+                  type: string
+                  enum:
+                    - cycles
+                value:
+                  type: number
+                  nullable: true
+              required:
+                - kind
+                - value
+              additionalProperties: false
+            - type: object
+              properties:
+                kind:
+                  type: string
+                  enum:
+                    - value
+                value:
+                  type: string
+                  format: date-time
+              required:
+                - kind
+                - value
+              additionalProperties: false
+        freeTrialDays:
+          type: number
+          minimum: 0
+        prorateChanges:
+          type: boolean
+      required:
+        - anchorDate
+        - startDate
+        - endDate
+        - freeTrialDays
+        - prorateChanges
+      additionalProperties: false
+    RecurringInvoiceConfig:
+      type: object
+      description: Invoice settings for recurring payments.
+      properties:
+        enabled:
+          type: boolean
+        daysUntilDue:
+          type: number
+        paymentMethods:
+          type: array
+          items:
+            type: string
+      required:
+        - enabled
+        - daysUntilDue
+        - paymentMethods
+      additionalProperties: false
+    RecurringConfig:
+      type: object
+      description: Recurring (subscription) payment configuration for the page.
+      properties:
+        enabled:
+          type: boolean
+        defaultSettings:
+          $ref: '#/components/schemas/RecurringSettings'
+        invoiceConfig:
+          $ref: '#/components/schemas/RecurringInvoiceConfig'
+        settings:
+          type: object
+          description: >-
+            Per-frequency schedule overrides, keyed by recurring frequency (e.g.
+            `monthly`).
+          additionalProperties:
+            $ref: '#/components/schemas/RecurringSettings'
+      required:
+        - enabled
+      additionalProperties: false
+    PaymentSettings:
+      type: object
+      description: >-
+        Page-level Qwilr Pay settings. `gatewayId` is the Qwilr id of the
+        payment gateway the page charges through (`null` when no gateway is
+        configured).
+      properties:
+        enabled:
+          type: boolean
+          description: Whether Qwilr Pay is enabled on the page.
+        gatewayId:
+          type: string
+          pattern: ^[a-z0-9]{24}$
+          nullable: true
+          description: >-
+            Qwilr id of the payment gateway the page charges through. `null`
+            when none is configured.
+        requireOnAccept:
+          type: boolean
+          description: Whether the buyer must pay at the moment they accept the page.
+        discoverable:
+          type: boolean
+          description: >-
+            Whether the payment option is surfaced to the buyer before
+            acceptance.
+        customBusinessName:
+          type: string
+          description: >-
+            Business name shown on the payment UI, overriding the account
+            default.
+        extraInformation:
+          type: string
+          description: Extra information shown to the buyer on the payment UI.
+        payLaterButtonText:
+          type: string
+          description: Custom label for the pay-later button.
+        partialPaymentConfig:
+          type: object
+          description: Lets the buyer pay a portion of the total up front.
+          properties:
+            enabled:
+              type: boolean
+            amount:
+              type: number
+            kind:
+              type: string
+              enum:
+                - fixed
+                - percentage
+          required:
+            - enabled
+            - amount
+            - kind
+          additionalProperties: false
+        recurringConfig:
+          $ref: '#/components/schemas/RecurringConfig'
+      required:
+        - enabled
+      additionalProperties: false
     Page:
       type: object
       properties:
@@ -1691,6 +1898,8 @@ components:
           $ref: '#/components/schemas/Acceptance'
         ownerId:
           $ref: '#/components/schemas/ObjectId'
+        paymentSettings:
+          $ref: '#/components/schemas/PaymentSettings'
         expiry:
           type: object
           description: >-
@@ -1732,6 +1941,54 @@ components:
         - statusCode
         - timestamp
         - message
+    PaymentSettingsUpdate:
+      type: object
+      description: >-
+        Partial update of a page's Qwilr Pay settings. Every field is optional;
+        omitted fields are left unchanged. Enabling payments (`enabled: true`)
+        requires a gateway — pass `gatewayId` (the gateway's Qwilr id) or omit
+        it to fall back to the account's default gateway. Note: enabling
+        payments on a page that has no gateway configured replaces the whole
+        block with account defaults rather than merging.
+      properties:
+        enabled:
+          type: boolean
+        gatewayId:
+          type: string
+          pattern: ^[a-z0-9]{24}$
+          description: >-
+            The gateway's Qwilr id. Omit to use the account's default gateway
+            when enabling.
+        requireOnAccept:
+          type: boolean
+        discoverable:
+          type: boolean
+        customBusinessName:
+          type: string
+        extraInformation:
+          type: string
+        payLaterButtonText:
+          type: string
+        partialPaymentConfig:
+          type: object
+          properties:
+            enabled:
+              type: boolean
+            amount:
+              type: number
+            kind:
+              type: string
+              enum:
+                - fixed
+                - percentage
+          required:
+            - enabled
+            - amount
+            - kind
+          additionalProperties: false
+        recurringConfig:
+          $ref: '#/components/schemas/RecurringConfig'
+      additionalProperties: false
     SavedBlock:
       type: object
       properties:
