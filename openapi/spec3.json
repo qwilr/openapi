@@ -41,6 +41,10 @@
     {
       "name": "Taxes",
       "description": "Tax objects correspond to the quote tax definitions configured on your\nQwilr account. The Qwilr API allows you to create, retrieve, update and\ndelete these, so you can manage them and reference their IDs when building\nquotes.\n"
+    },
+    {
+      "name": "Payment Gateways",
+      "description": "Payment gateway objects correspond to the Qwilr Pay gateways configured on\nyour Qwilr account. The Qwilr API allows you to list these so you can\nreference a gateway's ID as the `gatewayId` on a page's payment settings.\n"
     }
   ],
   "servers": [
@@ -566,6 +570,49 @@
         "responses": {
           "204": {
             "description": "The tax has been deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        }
+      }
+    },
+    "/payment-gateways": {
+      "get": {
+        "summary": "List payment gateways",
+        "description": "Retrieve the Qwilr Pay payment gateways configured on your account, including each gateway's ID and name. Use a gateway's `id` as the `gatewayId` when configuring a page's payment settings.",
+        "tags": [
+          "Payment Gateways"
+        ],
+        "operationId": "getPaymentGateways",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentGateway"
+                  }
+                }
+              }
+            }
           },
           "400": {
             "$ref": "#/components/responses/BadRequest"
@@ -2014,6 +2061,7 @@
             "description": "When the subscription's billing cycle is anchored.",
             "oneOf": [
               {
+                "title": "Preset",
                 "type": "object",
                 "properties": {
                   "kind": {
@@ -2036,6 +2084,7 @@
                 "additionalProperties": false
               },
               {
+                "title": "Specific date",
                 "type": "object",
                 "properties": {
                   "kind": {
@@ -2061,6 +2110,7 @@
             "description": "When the subscription starts.",
             "oneOf": [
               {
+                "title": "Preset",
                 "type": "object",
                 "properties": {
                   "kind": {
@@ -2083,6 +2133,7 @@
                 "additionalProperties": false
               },
               {
+                "title": "Specific date",
                 "type": "object",
                 "properties": {
                   "kind": {
@@ -2108,6 +2159,7 @@
             "description": "When the subscription ends — a fixed number of billing cycles (`null` = never) or an explicit date.",
             "oneOf": [
               {
+                "title": "Number of cycles",
                 "type": "object",
                 "properties": {
                   "kind": {
@@ -2128,6 +2180,7 @@
                 "additionalProperties": false
               },
               {
+                "title": "Specific date",
                 "type": "object",
                 "properties": {
                   "kind": {
@@ -2550,6 +2603,27 @@
           }
         },
         "minProperties": 1,
+        "additionalProperties": false
+      },
+      "PaymentGateway": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]{24}$",
+            "description": "The Qwilr id of the payment gateway. Pass this value as `gatewayId` on a page's payment settings to charge that page through this gateway.",
+            "example": "6634f0c2a1b2c3d4e5f60718"
+          },
+          "name": {
+            "type": "string",
+            "description": "The display name of the payment gateway.",
+            "example": "Qwilr Pay - AU"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
         "additionalProperties": false
       },
       "EventType": {
