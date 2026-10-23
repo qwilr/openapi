@@ -44,9 +44,9 @@ externalDocs:
 tags:
   - name: Pages
     description: |
-      Page objects correspond to pages in the Qwilr UI, allowing for the
-      creation of a public-facing Qwilr Page. The Qwilr API allows you to
-      create, delete and replace your Pages by sending through JSON objects.
+      A page object is a page in the Qwilr app. With the API you can list your
+      pages, and you can create, read and update a page by sending a JSON
+      object.
   - name: Blocks
     description: >
       Block objects correspond to blocks in the Qwilr UI. Pages and templates
@@ -65,15 +65,17 @@ tags:
       Miscellaneous operations concerning your Qwilr account.
   - name: Taxes
     description: |
-      Tax objects correspond to the quote tax definitions configured on your
-      Qwilr account. The Qwilr API allows you to create, retrieve, update and
-      delete these, so you can manage them and reference their IDs when building
-      quotes.
+      A tax object is a quote tax definition in your Qwilr account. With the API
+      you can create, read, update and delete your taxes, and use their IDs when
+      you build a quote.
   - name: Payment Gateways
-    description: |
-      Payment gateway objects correspond to the Qwilr Pay gateways configured on
-      your Qwilr account. The Qwilr API allows you to list these so you can
-      reference a gateway's ID as the `gatewayId` on a page's payment settings.
+    description: >
+      A payment gateway object is a Qwilr Pay gateway in your Qwilr account.
+      With
+
+      the API you can list your gateways, and use the ID of a gateway as the
+
+      `gatewayId` in the payment settings of a page.
 servers:
   - url: https://api.qwilr.com/v1
     description: Production server (uses live data)
@@ -81,6 +83,142 @@ security:
   - bearerAuth: []
 paths:
   /pages:
+    get:
+      summary: List pages
+      description: >-
+        Returns the pages in your account, with the newest page first. The
+        endpoint returns the pages in sets, and gives you a cursor for the next
+        set. It returns only the pages that the owner of the access token can
+        see. It never returns deleted pages. It does not return archived pages,
+        unless you pass `tags=archived`.
+
+
+        Each result is a summary of a page, not a full page. A summary has no
+        blocks, acceptance data or payment settings. [Get a
+        page](/api-reference/#pages/get-a-page) to read those fields.
+
+
+        To read every page in your account, send the `nextCursor` value from
+        your last response as the `cursor` parameter, and keep all of the other
+        parameters the same. Repeat this until `nextCursor` is `null`.
+      tags:
+        - Pages
+      operationId: listPages
+      parameters:
+        - name: limit
+          in: query
+          description: The maximum number of pages in each set of results. Default is `25`.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+        - name: cursor
+          in: query
+          description: >-
+            The cursor that points to the next set of results. Use the
+            `nextCursor` value from your last response. Omit this parameter to
+            get the first set of results. The API rejects a cursor that is not
+            valid, or a cursor from a response that used a different
+            `sortDirection`, with a `400`.
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: >-
+            Returns only the pages that have one of these
+            [statuses](https://help.qwilr.com/article/578-dashboard-page-statuses).
+            Give the statuses as a comma-separated list. `draft` selects the
+            pages that you have not published. `live` and `accepting` are
+            exclusive: `live` does not select a page that is `accepting`.
+          style: form
+          explode: false
+          allowReserved: true
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - draft
+                - live
+                - accepting
+                - accepted
+                - disabled
+                - declined
+        - name: tags
+          in: query
+          description: >-
+            Returns only the pages that have **all** of these tags. Give the
+            tags as a comma-separated list. Tags are case-sensitive. An archived
+            page has the `archived` tag, so `tags=archived` returns your
+            archived pages and only those pages.
+          style: form
+          explode: false
+          allowReserved: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: folderId
+          in: query
+          description: >-
+            Returns only the pages that are directly inside this folder. The
+            endpoint does not search sub-folders. Omit this parameter to return
+            the pages in all folders.
+          schema:
+            type: string
+            pattern: ^[a-z0-9]{24}$
+            example: 6ee0f841f3cc8900090d82dc
+        - name: ownerId
+          in: query
+          description: Returns only the pages that this user owns.
+          schema:
+            type: string
+            pattern: ^[a-z0-9]{24}$
+            example: 6ee0f841f3cc8900090d82dc
+        - name: sortDirection
+          in: query
+          description: >-
+            Sorts the results by the time each page was created. `desc` puts the
+            newest page first, and `asc` puts the oldest page first. Default is
+            `desc`.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: desc
+        - name: expand
+          in: query
+          description: >-
+            Adds more fields to each page in the results. Give the field names
+            as a comma-separated list.
+          style: form
+          explode: false
+          allowReserved: true
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - metadata
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
     post:
       summary: Create a page
       description: Creates a page from saved blocks or template.
@@ -126,61 +264,7 @@ paths:
                     blocks:
                       type: array
                       items:
-                        type: object
-                        properties:
-                          id:
-                            $ref: '#/components/schemas/SavedBlockId'
-                          foldable:
-                            type: object
-                            description: >-
-                              Foldable settings for the block. Folding is only
-                              possible with non Quote block types. Don't set
-                              this field for your Quote block.
-                            properties:
-                              enabled:
-                                type: boolean
-                                default: false
-                                description: >-
-                                  The block has the fold/unfold button shown if
-                                  the property is `true`, otherwise the ability
-                                  to fold/unfold is disabled. Default is
-                                  `false`.
-                              isFolded:
-                                type: boolean
-                                default: false
-                                description: >-
-                                  The block is folded by default if the property
-                                  is `true`, otherwise it's expanded. Default is
-                                  `false`.
-                              label:
-                                type: string
-                                default: Show / Hide
-                                description: >-
-                                  The label shown when folding is enabled.
-                                  Default is `Show / Hide`.
-                            required:
-                              - enabled
-                          splashSettings:
-                            $ref: '#/components/schemas/SplashSettings'
-                          acceptSettings:
-                            $ref: '#/components/schemas/AcceptBlockSettings'
-                          quoteSettings:
-                            $ref: '#/components/schemas/QuoteSettings'
-                          quoteSections:
-                            type: array
-                            description: >-
-                              An array of sections in a saved Quote block. Only
-                              relevant if you want to customise your quote
-                              block. Ignore this field for non Quote block
-                              types.
-                            maxItems: 100
-                            items:
-                              $ref: '#/components/schemas/QuoteSection'
-                          substitutions:
-                            $ref: '#/components/schemas/BlockSubstitutions'
-                        required:
-                          - id
-                        additionalProperties: false
+                        $ref: '#/components/schemas/SavedBlockData'
                   required:
                     - blocks
                 - title: Template
@@ -213,18 +297,24 @@ paths:
   /pages/{pageId}:
     get:
       summary: Get a page
-      description: Returns a page
+      description: >-
+        Returns one page, with all of its fields. To get many pages at the same
+        time, use [List pages](/api-reference/#pages/list-pages).
       tags:
         - Pages
       operationId: getPage
       parameters:
         - name: pageId
+          description: The ID of the page to get.
           required: true
           in: path
           schema:
             $ref: '#/components/schemas/ObjectId'
         - name: expand
           in: query
+          description: >-
+            Adds more fields to the page in the response. Give the field names
+            as a comma-separated list.
           style: form
           explode: false
           allowReserved: true
@@ -258,13 +348,22 @@ paths:
     put:
       summary: Update page
       description: >-
-        Allows you to update the `published` property, the page's auto-link
-        `expiry` settings, and its Qwilr Pay `paymentSettings`.
+        Updates the `published` field of the page, its link `expiry` settings
+        and its Qwilr Pay `paymentSettings`. Supplying `blocks` performs a full
+        content replacement of the page from saved blocks (the page keeps its id
+        and links); only pages created via the saved-block method are supported.
+        Supplying `folderId` moves the page to that folder. The move runs before
+        the other changes. If a later change fails, the page stays in the new
+        folder. Supplying `addTags` adds those tags to the page after the move.
+        An invalid tag rejects the request before any change. To move or tag an
+        accepted or disabled page, send only `folderId`,
+        `skipIfTemplateDefaultFolder` and `addTags`.
       tags:
         - Pages
       operationId: updatePage
       parameters:
         - name: pageId
+          description: The ID of the page to update.
           required: true
           in: path
           schema:
@@ -281,7 +380,63 @@ paths:
                   $ref: '#/components/schemas/Expiry'
                 paymentSettings:
                   $ref: '#/components/schemas/PaymentSettingsUpdate'
+                substitutions:
+                  description: >-
+                    Page-wide variable substitutions applied when replacing
+                    content. Only applied when `blocks` is supplied; overridden
+                    by any matching block-level substitutions.
+                  $ref: '#/components/schemas/PageSubstitutions'
+                blocks:
+                  type: array
+                  description: >-
+                    Saved blocks to replace the page's content with. When
+                    supplied, the page's existing content is fully replaced with
+                    these blocks. At least one block must be provided.
+                  minItems: 1
+                  items:
+                    $ref: '#/components/schemas/SavedBlockData'
+                folderId:
+                  description: >-
+                    The ID of the folder to move the page to. The owner of the
+                    access token must be able to view the folder. If the API
+                    cannot find the folder, it returns a `404` with the type
+                    `FolderNotFound`.
+                  type: string
+                  pattern: ^[a-z0-9]{24}$
+                  example: 6ee0f841f3cc8900090d82dc
+                skipIfTemplateDefaultFolder:
+                  description: >-
+                    Send this field only with `folderId`. When it is `true` and
+                    the template of the page has a default output folder that is
+                    the root, or that exists and is not `folderId`, the API does
+                    not move the page. It returns a `409` with the type
+                    `PAGE_USES_TEMPLATE_DEFAULT_FOLDER` and applies no other
+                    field in the request. A request with only `folderId` and
+                    this field can move an accepted or disabled page.
+                  type: boolean
+                  example: false
+                addTags:
+                  description: >-
+                    Tags to add to the page. The page keeps its other tags, and
+                    a tag that the page already has does not change. The API
+                    trims each tag. It returns a `400` for an empty tag, a tag
+                    longer than 30 characters, or the reserved tags `archived`,
+                    `starred` and `templateqwilr`, and then adds no tag.
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: string
+                  example:
+                    - renewal
+                    - q4
               additionalProperties: false
+              anyOf:
+                - not:
+                    required:
+                      - skipIfTemplateDefaultFolder
+                - required:
+                    - folderId
       responses:
         '200':
           description: The page has been successfully updated
@@ -297,6 +452,18 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          description: >-
+            The API did not update the page. The type
+            `PAGE_USES_TEMPLATE_DEFAULT_FOLDER` means that the template of the
+            page has a different default output folder (see
+            `skipIfTemplateDefaultFolder`). The type `ConflictError` means that
+            the page changed during the request, or that an acceptance is in
+            progress.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
@@ -333,10 +500,10 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
   /taxes:
     get:
-      summary: Get taxes
+      summary: List taxes
       description: >-
-        Retrieve the quote tax definitions configured on your account, including
-        each tax's ID, name, and rate.
+        Returns the quote tax definitions in your account. Each tax has an ID, a
+        name and a rate.
       tags:
         - Taxes
       operationId: getTaxes
@@ -364,14 +531,13 @@ paths:
     post:
       summary: Create a tax
       description: >-
-        Creates a new quote tax definition on your account. By default the tax's
-        `id` is generated for you and returned in the response. Alternatively,
-        supply your own `id` (for example, one from an external system) — it
-        must be unique within your account and follow the format described on
-        the request body. The `id` is set at creation time only and cannot be
-        changed later; to use a different id, delete the tax and create a new
-        one. Either way, store the returned `id` so you can reference the tax
-        elsewhere in the API.
+        Creates a quote tax definition in your account. Qwilr generates the `id`
+        of the tax and returns it in the response. You can also supply your own
+        `id`, for example an ID from another system. The request body gives the
+        rules for an `id` that you supply. You cannot change the `id` after you
+        create the tax. To use a different ID, delete the tax and create a new
+        one. Keep the `id` from the response, because you use it to refer to the
+        tax in other parts of the API.
       tags:
         - Taxes
       operationId: createTax
@@ -406,16 +572,16 @@ paths:
     patch:
       summary: Update a tax
       description: >-
-        Updates an existing quote tax definition. Only the fields you supply are
-        changed; at least one of `name` or `rate` must be provided. A tax's `id`
-        cannot be changed — to use a different id, delete the tax and create a
-        new one.
+        Updates a quote tax definition. The endpoint changes only the fields
+        that you supply. You must supply `name`, `rate`, or both. You cannot
+        change the `id` of a tax. To use a different ID, delete the tax and
+        create a new one.
       tags:
         - Taxes
       operationId: updateTax
       parameters:
         - name: taxId
-          description: The id of the tax to update.
+          description: The ID of the tax to update.
           required: true
           in: path
           schema:
@@ -443,13 +609,13 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
     delete:
       summary: Delete a tax
-      description: Deletes an existing quote tax definition from your account.
+      description: Deletes a quote tax definition from your account.
       tags:
         - Taxes
       operationId: deleteTax
       parameters:
         - name: taxId
-          description: The id of the tax to delete.
+          description: The ID of the tax to delete.
           required: true
           in: path
           schema:
@@ -473,9 +639,9 @@ paths:
     get:
       summary: List payment gateways
       description: >-
-        Retrieve the Qwilr Pay payment gateways configured on your account,
-        including each gateway's ID and name. Use a gateway's `id` as the
-        `gatewayId` when configuring a page's payment settings.
+        Returns the Qwilr Pay payment gateways in your account. Each gateway has
+        an ID and a name. Use the `id` of a gateway as the `gatewayId` in the
+        payment settings of a page.
       tags:
         - Payment Gateways
       operationId: getPaymentGateways
@@ -962,6 +1128,148 @@ components:
 
         - Send all requests over [HTTPS](https://en.wikipedia.org/wiki/HTTPS)
   schemas:
+    ObjectId:
+      type: string
+      pattern: ^[a-z0-9]{24}$
+      title: Id
+      example: 6ee0f841f3cc8900090d82dc
+    PageSummary:
+      type: object
+      description: >-
+        A summary of a page, returned by the list pages endpoint. A summary has
+        fewer fields than a full page: it has no blocks, acceptance data or
+        payment settings. This keeps the response small when you list many
+        pages. [Get a page](/api-reference/#pages/get-a-page) to read the other
+        fields.
+      properties:
+        id:
+          $ref: '#/components/schemas/ObjectId'
+        name:
+          type: string
+          description: The name of the page. The browser shows it as the page title.
+          example: Page Name
+        status:
+          type: string
+          description: >-
+            The
+            [status](https://help.qwilr.com/article/578-dashboard-page-statuses)
+            of the page. `accepting` means that some, but not all, of the
+            accepters accepted the page.
+          enum:
+            - draft
+            - live
+            - accepting
+            - accepted
+            - disabled
+            - declined
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time when the page was created.
+          example: '2026-07-23T04:21:09.000Z'
+        tags:
+          type: array
+          description: The tags on the page. Tags are case-sensitive.
+          items:
+            type: string
+        folderId:
+          description: >-
+            The ID of the folder that holds the page. It is `null` when the page
+            is at the top level of the dashboard.
+          type: string
+          pattern: ^[a-z0-9]{24}$
+          nullable: true
+          example: 6ee0f841f3cc8900090d82dc
+        ownerId:
+          description: >-
+            The ID of the user who owns the page. The API omits this field only
+            for an old page that has no owner.
+          $ref: '#/components/schemas/ObjectId'
+        metadata:
+          description: >-
+            The metadata on the page. The API returns this field only when you
+            pass `expand=metadata`. It is `null` when the page has no metadata.
+          type: object
+          nullable: true
+        links:
+          type: object
+          description: >-
+            The URLs of the page. Some URLs are for your buyers, and some are
+            for your team. If your account has a custom domain, the URLs for
+            your buyers use that domain.
+          properties:
+            publicUrl:
+              type: string
+              description: The main URL of the page, which you send to your buyers.
+            editorUrl:
+              type: string
+              description: The URL that opens the page in the Qwilr editor.
+            collaboratorUrl:
+              type: string
+              nullable: true
+              description: >-
+                The internal URL that your team uses to work on the page
+                together. It is `null` when the page has no collaborator URL.
+            pdfUrl:
+              type: string
+              description: >-
+                The URL that downloads a PDF version of the page. Use it when
+                you must have the page as a file. You do not usually send it to
+                your buyers. Send them `publicUrl`, which is the interactive
+                page.
+          required:
+            - publicUrl
+            - editorUrl
+            - collaboratorUrl
+            - pdfUrl
+          additionalProperties: false
+      required:
+        - id
+        - name
+        - status
+        - createdAt
+        - tags
+        - folderId
+        - links
+      additionalProperties: false
+    PageList:
+      type: object
+      description: One set of results from the list pages endpoint.
+      properties:
+        data:
+          type: array
+          description: >-
+            The pages in this set of results. They are in the order that
+            `sortDirection` sets.
+          items:
+            $ref: '#/components/schemas/PageSummary'
+        nextCursor:
+          type: string
+          nullable: true
+          description: >-
+            The cursor that points to the next set of results. To get the next
+            set, send this value as the `cursor` parameter and keep all of the
+            other parameters the same. It is `null` when there are no more
+            results.
+      required:
+        - data
+        - nextCursor
+      additionalProperties: false
+    Error:
+      description: Response error
+      properties:
+        statusCode:
+          type: number
+        timestamp:
+          type: string
+        type:
+          type: string
+        message:
+          type: string
+      required:
+        - statusCode
+        - timestamp
+        - message
     SavedBlockId:
       type: string
       pattern: ^[a-zA-Z0-9_-]{30}$
@@ -1176,12 +1484,13 @@ components:
     TaxIds:
       type: array
       description: >-
-        The IDs of the account taxes to apply. Each ID must reference an
-        existing tax in your account (create and manage taxes with the [Taxes
-        endpoints](/docs/api/reference/taxes)); an unknown ID is rejected with a
-        `400`. This field uses replace semantics: omit it to keep whatever taxes
-        the saved block already had, send `[]` to remove all taxes, or list IDs
-        to apply exactly those taxes.
+        The IDs of the taxes to apply to the whole quote. Ignore this field for
+        non Quote block types. Each ID must be the ID of a tax in your account.
+        Create and manage your taxes with the [Taxes
+        endpoints](/api-reference/#taxes). The API rejects an unknown ID with a
+        `400`. This field replaces the taxes that are already there: omit the
+        field to keep the taxes of the saved block, send `[]` to remove all of
+        the taxes, or send IDs to apply exactly those taxes.
       items:
         type: string
         pattern: ^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$
@@ -1231,9 +1540,6 @@ components:
           description: The discount to apply to the total quote price.
           $ref: '#/components/schemas/Discount'
         taxIds:
-          description: >-
-            The taxes to apply across the whole quote. Ignore this field for non
-            Quote block types.
           $ref: '#/components/schemas/TaxIds'
       additionalProperties: false
     Text:
@@ -1468,11 +1774,62 @@ components:
         oneOf:
           - $ref: '#/components/schemas/TextVariableSubstitutions'
           - $ref: '#/components/schemas/RepeatingVariableSubstitutions'
-    ObjectId:
-      type: string
-      pattern: ^[a-z0-9]{24}$
-      title: Id
-      example: 6ee0f841f3cc8900090d82dc
+    SavedBlockData:
+      type: object
+      description: >-
+        A single saved block to add to a page, identified by its saved-block
+        `id` with optional per-block customisation. Used both when creating a
+        page from saved blocks and when replacing a page's content via update.
+      properties:
+        id:
+          $ref: '#/components/schemas/SavedBlockId'
+        foldable:
+          type: object
+          description: >-
+            Foldable settings for the block. Folding is only possible with non
+            Quote block types. Don't set this field for your Quote block.
+          properties:
+            enabled:
+              type: boolean
+              default: false
+              description: >-
+                The block has the fold/unfold button shown if the property is
+                `true`, otherwise the ability to fold/unfold is disabled.
+                Default is `false`.
+            isFolded:
+              type: boolean
+              default: false
+              description: >-
+                The block is folded by default if the property is `true`,
+                otherwise it's expanded. Default is `false`.
+            label:
+              type: string
+              default: Show / Hide
+              description: >-
+                The label shown when folding is enabled. Default is `Show /
+                Hide`.
+          required:
+            - enabled
+        splashSettings:
+          $ref: '#/components/schemas/SplashSettings'
+        acceptSettings:
+          $ref: '#/components/schemas/AcceptBlockSettings'
+        quoteSettings:
+          $ref: '#/components/schemas/QuoteSettings'
+        quoteSections:
+          type: array
+          description: >-
+            An array of sections in a saved Quote block. Only relevant if you
+            want to customise your quote block. Ignore this field for non Quote
+            block types.
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/QuoteSection'
+        substitutions:
+          $ref: '#/components/schemas/BlockSubstitutions'
+      required:
+        - id
+      additionalProperties: false
     AcceptTemplateSettings:
       type: object
       description: >-
@@ -1500,27 +1857,25 @@ components:
     Expiry:
       type: object
       description: >-
-        Page auto-link [expiry
-        settings](https://help.qwilr.com/article/579-set-a-page-to-expire). When
-        enabled, the page's public link automatically expires and the page is
-        declined after the configured number of days. The expiry clock starts
-        when the page is published, so a draft page just stores the setting
-        until it goes live.
+        The [link expiry
+        settings](https://help.qwilr.com/article/579-set-a-page-to-expire) for
+        the page. When you enable expiry, the link of the page stops working
+        after the number of days that you set, and the status of the page
+        becomes `declined`. The count of days starts when you publish the page.
+        A draft page keeps the setting until you publish it.
       properties:
         enabled:
           type: boolean
           default: false
-          description: >-
-            Whether auto-link expiry is enabled for the page. Default is
-            `false`.
+          description: Whether link expiry is enabled for the page. Default is `false`.
         expireAfterDays:
           type: integer
           minimum: 1
           maximum: 365
           description: >-
-            Number of days after the page is published before its link expires.
-            Required when `enabled` is `true`. Must be an integer between 1 and
-            365.
+            The number of days after you publish the page before its link stops
+            working. This field is necessary when `enabled` is `true`. Give a
+            whole number from 1 to 365.
       required:
         - enabled
       additionalProperties: false
@@ -1684,11 +2039,12 @@ components:
     RecurringSettings:
       type: object
       description: >-
-        A single recurring (subscription) schedule — anchor/start/end dates,
-        free trial and proration.
+        One schedule for a recurring payment (subscription). It sets the anchor
+        date, the start date, the end date, the free trial and the changes in
+        price.
       properties:
         anchorDate:
-          description: When the subscription's billing cycle is anchored.
+          description: The date that the billing cycle of the subscription starts from.
           oneOf:
             - title: Preset
               type: object
@@ -1753,8 +2109,8 @@ components:
               additionalProperties: false
         endDate:
           description: >-
-            When the subscription ends — a fixed number of billing cycles
-            (`null` = never) or an explicit date.
+            When the subscription ends. Give a number of billing cycles, where
+            `null` means that the subscription does not end, or give a date.
           oneOf:
             - title: Number of cycles
               type: object
@@ -1787,8 +2143,12 @@ components:
         freeTrialDays:
           type: number
           minimum: 0
+          description: The number of days in the free trial. Use `0` for no free trial.
         prorateChanges:
           type: boolean
+          description: >-
+            Whether Qwilr calculates a part-period amount when the subscription
+            changes in the middle of a billing cycle.
       required:
         - anchorDate
         - startDate
@@ -1798,14 +2158,19 @@ components:
       additionalProperties: false
     RecurringInvoiceConfig:
       type: object
-      description: Invoice settings for recurring payments.
+      description: The invoice settings for recurring payments.
       properties:
         enabled:
           type: boolean
+          description: Whether Qwilr sends an invoice for each recurring payment.
         daysUntilDue:
           type: number
+          description: >-
+            The number of days after Qwilr sends the invoice before the payment
+            is due.
         paymentMethods:
           type: array
+          description: The payment methods that the buyer can use to pay the invoice.
           items:
             type: string
       required:
@@ -1815,19 +2180,24 @@ components:
       additionalProperties: false
     RecurringConfig:
       type: object
-      description: Recurring (subscription) payment configuration for the page.
+      description: The settings for recurring payments (subscriptions) on the page.
       properties:
         enabled:
           type: boolean
+          description: Whether recurring payments are enabled on the page.
         defaultSettings:
+          description: >-
+            The schedule that the page uses for each billing frequency, unless
+            `settings` sets another one.
           $ref: '#/components/schemas/RecurringSettings'
         invoiceConfig:
           $ref: '#/components/schemas/RecurringInvoiceConfig'
         settings:
           type: object
           description: >-
-            Per-frequency schedule overrides, keyed by recurring frequency (e.g.
-            `monthly`).
+            The schedules for specific billing frequencies. Each key is a
+            billing frequency, for example `monthly`. A schedule here replaces
+            `defaultSettings` for that frequency.
           additionalProperties:
             $ref: '#/components/schemas/RecurringSettings'
       required:
@@ -1835,10 +2205,7 @@ components:
       additionalProperties: false
     PaymentSettings:
       type: object
-      description: >-
-        Page-level Qwilr Pay settings. `gatewayId` is the Qwilr id of the
-        payment gateway the page charges through (`null` when no gateway is
-        configured).
+      description: The Qwilr Pay settings for the page.
       properties:
         enabled:
           type: boolean
@@ -1848,37 +2215,42 @@ components:
           pattern: ^[a-z0-9]{24}$
           nullable: true
           description: >-
-            Qwilr id of the payment gateway the page charges through. `null`
-            when none is configured.
+            The ID of the payment gateway that takes the payments for the page.
+            It is `null` when the page has no gateway.
         requireOnAccept:
           type: boolean
-          description: Whether the buyer must pay at the moment they accept the page.
+          description: Whether the buyer must pay at the same time as they accept the page.
         discoverable:
           type: boolean
           description: >-
-            Whether the payment option is surfaced to the buyer before
-            acceptance.
+            Whether the page shows the payment option to the buyer before the
+            buyer accepts it.
         customBusinessName:
           type: string
           description: >-
-            Business name shown on the payment UI, overriding the account
-            default.
+            The business name that the payment screen shows. It replaces the
+            default name of your account.
         extraInformation:
           type: string
-          description: Extra information shown to the buyer on the payment UI.
+          description: More information for the buyer on the payment screen.
         payLaterButtonText:
           type: string
-          description: Custom label for the pay-later button.
+          description: Your own label for the pay later button.
         partialPaymentConfig:
           type: object
-          description: Lets the buyer pay a portion of the total up front.
+          description: The settings that let the buyer pay part of the total amount first.
           properties:
             enabled:
               type: boolean
+              description: Whether the buyer can pay part of the total amount first.
             amount:
               type: number
+              description: >-
+                The amount that the buyer pays first. It is a fixed amount or a
+                percentage of the total, which `kind` sets.
             kind:
               type: string
+              description: Whether `amount` is a fixed amount or a percentage of the total.
               enum:
                 - fixed
                 - percentage
@@ -1899,9 +2271,15 @@ components:
           $ref: '#/components/schemas/ObjectId'
         name:
           type: string
+          description: The name of the page. The browser shows it as the page title.
           example: Page Name
         status:
           type: string
+          description: >-
+            The
+            [status](https://help.qwilr.com/article/578-dashboard-page-statuses)
+            of the page. `accepting` means that some, but not all, of the
+            accepters accepted the page.
           enum:
             - draft
             - live
@@ -1911,24 +2289,51 @@ components:
             - declined
         tags:
           type: array
+          description: The tags on the page. Tags are case-sensitive.
           items:
             type: string
+        folderId:
+          description: >-
+            The ID of the folder that holds the page. It is `null` when the page
+            is at the top level of the dashboard.
+          type: string
+          pattern: ^[a-z0-9]{24}$
+          nullable: true
+          example: 6ee0f841f3cc8900090d82dc
         metadata:
+          description: >-
+            The metadata on the page. The API returns this field only when you
+            pass `expand=metadata`. It is `null` when the page has no metadata.
           type: object
           nullable: true
         links:
           type: object
+          description: >-
+            The URLs of the page. Some URLs are for your buyers, and some are
+            for your team. If your account has a custom domain, the URLs for
+            your buyers use that domain.
           properties:
             collaboratorUrl:
               type: string
+              description: >-
+                The internal URL that your team uses to work on the page
+                together.
             editorUrl:
               type: string
+              description: The URL that opens the page in the Qwilr editor.
             publicUrl:
               type: string
+              description: The main URL of the page, which you send to your buyers.
             pdfUrl:
               type: string
+              description: >-
+                The URL that downloads a PDF version of the page. Use it when
+                you must have the page as a file. You do not usually send it to
+                your buyers. Send them `publicUrl`, which is the interactive
+                page.
             agreementPdfUrl:
               type: string
+              description: The URL of the PDF version of the agreement on the page.
           required:
             - collaboratorUrl
             - editorUrl
@@ -1939,23 +2344,29 @@ components:
         previewAcceptance:
           $ref: '#/components/schemas/Acceptance'
         ownerId:
+          description: The ID of the user who owns the page.
           $ref: '#/components/schemas/ObjectId'
         paymentSettings:
           $ref: '#/components/schemas/PaymentSettings'
         expiry:
           type: object
           description: >-
-            Auto-link expiry settings for the page. `enabled` is `false` when
-            the page has no active expiry. `expireAfterDays` and `expiresOn` are
-            only present once expiry is enabled; `expiresOn` (the computed
-            absolute expiry timestamp) is set only after the page is published.
+            The link expiry settings for the page. `enabled` is `false` when the
+            link of the page does not expire. The API returns `expireAfterDays`
+            and `expiresOn` only when expiry is enabled, and it returns
+            `expiresOn` only after you publish the page.
           properties:
             enabled:
               type: boolean
+              description: Whether link expiry is enabled for the page.
             expireAfterDays:
               type: integer
+              description: >-
+                The number of days after you publish the page before its link
+                stops working.
             expiresOn:
               type: string
+              description: The date and time when the link of the page stops working.
           required:
             - enabled
           additionalProperties: false
@@ -1964,62 +2375,66 @@ components:
         - name
         - status
         - tags
+        - folderId
         - links
         - ownerId
         - expiry
       additionalProperties: false
-    Error:
-      description: Response error
-      properties:
-        statusCode:
-          type: number
-        timestamp:
-          type: string
-        type:
-          type: string
-        message:
-          type: string
-      required:
-        - statusCode
-        - timestamp
-        - message
     PaymentSettingsUpdate:
       type: object
       description: >-
-        Partial update of a page's Qwilr Pay settings. Every field is optional;
-        omitted fields are left unchanged. Enabling payments (`enabled: true`)
-        requires a gateway — pass `gatewayId` (the gateway's Qwilr id) or omit
-        it to fall back to the account's default gateway. Note: enabling
-        payments on a page that has no gateway configured replaces the whole
-        block with account defaults rather than merging.
+        The changes to make to the Qwilr Pay settings of the page. All of the
+        fields are optional, and the endpoint does not change a field that you
+        omit. To switch payments on, send `enabled: true`. The page then needs a
+        gateway, so send `gatewayId`, or omit it to use the default gateway of
+        your account. Note: if you switch payments on for a page that has no
+        gateway, the endpoint replaces all of the payment settings with the
+        defaults of your account. It does not merge your values into them.
       properties:
         enabled:
           type: boolean
+          description: Whether Qwilr Pay is enabled on the page.
         gatewayId:
           type: string
           pattern: ^[a-z0-9]{24}$
           description: >-
-            The gateway's Qwilr id. Omit to use the account's default gateway
-            when enabling.
+            The ID of the payment gateway that takes the payments for the page.
+            Omit it to use the default gateway of your account when you switch
+            payments on.
         requireOnAccept:
           type: boolean
+          description: Whether the buyer must pay at the same time as they accept the page.
         discoverable:
           type: boolean
+          description: >-
+            Whether the page shows the payment option to the buyer before the
+            buyer accepts it.
         customBusinessName:
           type: string
+          description: >-
+            The business name that the payment screen shows. It replaces the
+            default name of your account.
         extraInformation:
           type: string
+          description: More information for the buyer on the payment screen.
         payLaterButtonText:
           type: string
+          description: Your own label for the pay later button.
         partialPaymentConfig:
           type: object
+          description: The settings that let the buyer pay part of the total amount first.
           properties:
             enabled:
               type: boolean
+              description: Whether the buyer can pay part of the total amount first.
             amount:
               type: number
+              description: >-
+                The amount that the buyer pays first. It is a fixed amount or a
+                percentage of the total, which `kind` sets.
             kind:
               type: string
+              description: Whether `amount` is a fixed amount or a percentage of the total.
               enum:
                 - fixed
                 - percentage
@@ -2048,8 +2463,8 @@ components:
         id:
           type: string
           description: >-
-            The unique identifier of the tax. Use this when referencing the tax
-            elsewhere in the API.
+            The ID of the tax. Use this value to refer to the tax in other parts
+            of the API.
           example: gst
         name:
           type: string
@@ -2059,8 +2474,8 @@ components:
           type: number
           nullable: true
           description: >-
-            The tax rate, as a percentage. May be `null` when no rate has been
-            set.
+            The rate of the tax, as a percentage. It is `null` when the tax has
+            no rate.
           example: 10
       required:
         - id
@@ -2073,13 +2488,13 @@ components:
         id:
           type: string
           description: >-
-            An optional identifier for the tax. Supply your own `id` (for
-            example, one from an external system) to reference the tax by a
-            value you control; if omitted, Qwilr generates one for you. Must be
-            unique within your account, and 1–64 characters of letters, digits,
-            `-` or `_`, starting with a letter or digit. The `id` is set at
-            creation time only and cannot be changed afterwards — to use a
-            different id, delete the tax and create a new one.
+            An optional ID for the tax. Supply your own ID, for example an ID
+            from another system, to refer to the tax by a value that you
+            control. If you omit this field, Qwilr generates an ID for you. The
+            ID must be unique in your account. It must have 1 to 64 characters.
+            Use letters, digits, `-` and `_` only, and start with a letter or a
+            digit. You cannot change the ID after you create the tax. To use a
+            different ID, delete the tax and create a new one.
           pattern: ^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$
           example: gst
         name:
@@ -2090,8 +2505,8 @@ components:
           type: number
           nullable: true
           description: >-
-            The tax rate, as a percentage. Pass `null` to create a tax with no
-            rate set.
+            The rate of the tax, as a percentage. Send `null` to create a tax
+            with no rate.
           example: 10
       required:
         - name
@@ -2100,8 +2515,8 @@ components:
     UpdateTaxRequest:
       type: object
       description: >-
-        Updates an existing tax. Only the fields you supply are changed; at
-        least one of `name` or `rate` must be provided.
+        The changes to make to the tax. The endpoint changes only the fields
+        that you supply. You must supply `name`, `rate`, or both.
       properties:
         name:
           type: string
@@ -2110,7 +2525,9 @@ components:
         rate:
           type: number
           nullable: true
-          description: The tax rate, as a percentage. Pass `null` to clear the rate.
+          description: >-
+            The rate of the tax, as a percentage. Send `null` to remove the
+            rate.
           example: 10
       minProperties: 1
       additionalProperties: false
@@ -2121,9 +2538,9 @@ components:
           type: string
           pattern: ^[a-z0-9]{24}$
           description: >-
-            The Qwilr id of the payment gateway. Pass this value as `gatewayId`
-            on a page's payment settings to charge that page through this
-            gateway.
+            The ID of the payment gateway. Send this value as the `gatewayId` in
+            the payment settings of a page, to take the payments for that page
+            through this gateway.
           example: 6634f0c2a1b2c3d4e5f60718
         name:
           type: string
@@ -2212,12 +2629,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     UnprocessableEntity:
       description: Entity has not passed validation
       content:
@@ -2226,6 +2637,12 @@ components:
             $ref: '#/components/schemas/Error'
     TooManyRequests:
       description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
       content:
         application/json:
           schema:
