@@ -421,7 +421,8 @@ paths:
                     a tag that the page already has does not change. The API
                     trims each tag. It returns a `400` for an empty tag, a tag
                     longer than 30 characters, or the reserved tags `archived`,
-                    `starred` and `templateqwilr`, and then adds no tag.
+                    `starred` and `templateqwilr` in any letter case, and then
+                    adds no tag.
                   type: array
                   minItems: 1
                   maxItems: 20
