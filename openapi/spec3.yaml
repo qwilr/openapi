@@ -1482,6 +1482,17 @@ components:
         - type
         - amount
       additionalProperties: false
+    Discounts:
+      description: >-
+        One discount, or a list of up to 10 discounts. Qwilr applies a list in
+        order. Each discount applies to the price that remains after the
+        discounts before it. Send `[]` to apply no discount.
+      oneOf:
+        - $ref: '#/components/schemas/Discount'
+        - type: array
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/Discount'
     TaxIds:
       type: array
       description: >-
@@ -1538,8 +1549,12 @@ components:
           description: Whether the total amount excluding tax is shown. Default is `false`.
           default: false
         quoteDiscount:
-          description: The discount to apply to the total quote price.
-          $ref: '#/components/schemas/Discount'
+          description: >-
+            The discounts to apply to the total quote price. Send one discount,
+            or a list of up to 10 discounts. Omit the field to keep the
+            discounts of the saved block. See [Applying
+            discounts](/docs/guides/quote-data-lifecycle#applying-discounts).
+          $ref: '#/components/schemas/Discounts'
         taxIds:
           $ref: '#/components/schemas/TaxIds'
       additionalProperties: false
@@ -1608,8 +1623,11 @@ components:
             Whether an optional line item is selected by default. Default is
             `false`.
         lineItemDiscount:
-          description: The discount to apply to the total line item price.
-          $ref: '#/components/schemas/Discount'
+          description: >-
+            The discounts to apply to the total line item price. Send one
+            discount, or a list of up to 10 discounts. See [Applying
+            discounts](/docs/guides/quote-data-lifecycle#applying-discounts).
+          $ref: '#/components/schemas/Discounts'
         billingSchedule:
           type: string
           description: >-
@@ -1728,8 +1746,11 @@ components:
                 the quote's selectionType is 'multi' or 'single'". Default is
                 `false`.
             sectionDiscount:
-              description: The discount to apply to the total section price.
-              $ref: '#/components/schemas/Discount'
+              description: >-
+                The discounts to apply to the total section price. Send one
+                discount, or a list of up to 10 discounts. See [Applying
+                discounts](/docs/guides/quote-data-lifecycle#applying-discounts).
+              $ref: '#/components/schemas/Discounts'
             showFeatures:
               type: boolean
               default: true

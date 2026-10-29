@@ -1730,6 +1730,21 @@
         ],
         "additionalProperties": false
       },
+      "Discounts": {
+        "description": "One discount, or a list of up to 10 discounts. Qwilr applies a list in order. Each discount applies to the price that remains after the discounts before it. Send `[]` to apply no discount.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Discount"
+          },
+          {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "$ref": "#/components/schemas/Discount"
+            }
+          }
+        ]
+      },
       "TaxIds": {
         "type": "array",
         "description": "The IDs of the taxes to apply to the whole quote. Ignore this field for non Quote block types. Each ID must be the ID of a tax in your account. Create and manage your taxes with the [Taxes endpoints](/api-reference/#taxes). The API rejects an unknown ID with a `400`. This field replaces the taxes that are already there: omit the field to keep the taxes of the saved block, send `[]` to remove all of the taxes, or send IDs to apply exactly those taxes.",
@@ -1780,8 +1795,8 @@
             "default": false
           },
           "quoteDiscount": {
-            "description": "The discount to apply to the total quote price.",
-            "$ref": "#/components/schemas/Discount"
+            "description": "The discounts to apply to the total quote price. Send one discount, or a list of up to 10 discounts. Omit the field to keep the discounts of the saved block. See [Applying discounts](/docs/guides/quote-data-lifecycle#applying-discounts).",
+            "$ref": "#/components/schemas/Discounts"
           },
           "taxIds": {
             "$ref": "#/components/schemas/TaxIds"
@@ -1869,8 +1884,8 @@
             "description": "Whether an optional line item is selected by default. Default is `false`."
           },
           "lineItemDiscount": {
-            "description": "The discount to apply to the total line item price.",
-            "$ref": "#/components/schemas/Discount"
+            "description": "The discounts to apply to the total line item price. Send one discount, or a list of up to 10 discounts. See [Applying discounts](/docs/guides/quote-data-lifecycle#applying-discounts).",
+            "$ref": "#/components/schemas/Discounts"
           },
           "billingSchedule": {
             "type": "string",
@@ -2003,8 +2018,8 @@
                 "description": "Whether this quote section must be selected. Only relevant when the quote's selectionType is 'multi' or 'single'\". Default is `false`."
               },
               "sectionDiscount": {
-                "description": "The discount to apply to the total section price.",
-                "$ref": "#/components/schemas/Discount"
+                "description": "The discounts to apply to the total section price. Send one discount, or a list of up to 10 discounts. See [Applying discounts](/docs/guides/quote-data-lifecycle#applying-discounts).",
+                "$ref": "#/components/schemas/Discounts"
               },
               "showFeatures": {
                 "type": "boolean",
