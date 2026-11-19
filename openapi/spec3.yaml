@@ -1701,6 +1701,13 @@ components:
           description: >-
             Whether only one line item or plan card in this section can be
             selected at a time. Default is `false` for tables, `true` for plans.
+        itemSelectionRequired:
+          type: boolean
+          description: >-
+            Whether the buyer must select an optional line item or plan card in
+            this section before they can accept the page. This is the "Require a
+            choice" setting in the editor. A saved block made with the legacy
+            quote block returns a `400` for `true`. Default is `false`.
         description:
           description: The text description of the section.
           $ref: '#/components/schemas/Text'
